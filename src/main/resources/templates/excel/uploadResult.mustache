@@ -1,2 +1,13 @@
 <h2>업로드 완료</h2>
-<p>총 업로드된 행 수: {{rowCount}}</p>
+
+{{#rowCount}}
+    <p>총 업로드된 행 수: {{rowCount}}</p>
+{{/rowCount}}
+
+{{^rowCount}}
+    <p>업로드된 행 수 정보가 없습니다.</p>
+{{/rowCount}}
+
+{{#error}}
+    <p style="color:red;">에러 발생: {{error}}</p>
+{{/error}}

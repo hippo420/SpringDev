@@ -1,5 +1,6 @@
 package app.springdev.excel.svc;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 public class ExcelService {
 
@@ -33,10 +34,10 @@ public class ExcelService {
 
             // TODO: 여기에 대용량 데이터를 DB에 일괄 저장 처리
             // ex) service.bulkInsert(rowList);
-
+            log.info("업로드된 행수 : {}", rowList.size());
             model.addAttribute("rowCount", rowList.size());
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("엑셀 파일 처리 중 오류 발생 -> ",e.getMessage());
             model.addAttribute("error", "엑셀 파일 처리 중 오류 발생: " + e.getMessage());
         }
     }
