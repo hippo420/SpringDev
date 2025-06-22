@@ -8,28 +8,30 @@ import app.springdev.jpa.vo.TeamMemberVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Slf4j
 public class TeamService {
     private final TeamRepository teamRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
     public void showNPlusOne() {
         List<Team> teams = teamRepository.findAll();
         for (Team team : teams) {
-            log.info("Team: {}",team.getName());
+            log.info("Team: {} ",team.getName());
             for (Member m : team.getMembers()) {
                 log.info("=>   Member: {}",m.getName());
             }
         }
     }
 
+    @Transactional(readOnly = true)
     public void showWithFetchJoin() {
 
         List<Team> teams = teamRepository.findAllWithFetchJoin();
@@ -41,6 +43,7 @@ public class TeamService {
         }
     }
 
+    @Transactional(readOnly = true)
     public void showWithEntityGraph() {
         List<Team> teams = teamRepository.findAllWithEntityGraph();
         for (Team team : teams) {
@@ -51,6 +54,7 @@ public class TeamService {
         }
     }
 
+    @Transactional(readOnly = true)
     public void showWithDTO() {
         List<TeamMemberVo> dtos = teamRepository.findTeamMemberVoList();
         for (TeamMemberVo dto : dtos) {
@@ -58,22 +62,5 @@ public class TeamService {
         }
     }
 
-    @Transactional
-    public void initData(){
-        teamRepository.deleteAll();
-        memberRepository.deleteAll();
-        for (int i = 1; i <= 5; i++) {
-            Team team = new Team();
-            team.setName("Team " + i);
-            teamRepository.save(team);
 
-            for (int j = 1; j <= 3; j++) {
-                Member member = new Member();
-                member.setName("Member " + i + "-" + j);
-                member.setTeam(team);
-
-                memberRepository.save(member);
-            }
-        }
-    }
 }

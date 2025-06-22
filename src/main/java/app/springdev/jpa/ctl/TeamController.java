@@ -1,6 +1,7 @@
 package app.springdev.jpa.ctl;
 
 import app.springdev.jpa.repository.TeamRepository;
+import app.springdev.jpa.svc.InitService;
 import app.springdev.jpa.svc.TeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("jpa")
 public class TeamController {
     private final TeamService teamService;
+    private final InitService initService;
 
     @RequestMapping("showNPlusOne")
     public void showNPlusOne() {
-        teamService.initData();
+        initService.initData();
         // N+1 확인
         log.info("▶▶ N+1 문제 발생 예시");
         teamService.showNPlusOne();
@@ -24,7 +26,7 @@ public class TeamController {
 
     @RequestMapping("showWithFetchJoin")
     public void showWithFetchJoin() {
-        teamService.initData();
+        initService.initData();
         // Fetch Join
         log.info("▶▶ Fetch Join");
         teamService.showWithFetchJoin();
@@ -32,7 +34,7 @@ public class TeamController {
 
     @RequestMapping("showWithEntityGraph")
     public void showWithEntityGraph() {
-        teamService.initData();
+        initService.initData();
         // Entity Graph
         log.info("▶▶ Entity Graph");
         teamService.showWithEntityGraph();
@@ -40,7 +42,7 @@ public class TeamController {
 
     @RequestMapping("showWithDTO")
     public void showWithDTO() {
-        teamService.initData();
+        initService.initData();
         // DTO 조회
         log.info("▶▶ DTO 조회");
         teamService.showWithDTO();
