@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>진료 정보 업로드</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+
+    <h1>📁 진료 정보 관리</h1>
+
+    <!-- ✅ 조회 영역 -->
+    <div class="search-box">
+        <form method="get" action="/search">
+            <label>진료년도:
+                <input type="text" name="year" placeholder="예: 2023">
+            </label>
+            <label>성별:
+                <select name="gender">
+                    <option value="">전체</option>
+                    <option value="남">남</option>
+                    <option value="여">여</option>
+                </select>
+            </label>
+            <button type="submit">조회</button>
+            <button onclick="openInputModal()">신규 입력</button>
+
+
+        </form>
+        <!-- ✅ 업로드 버튼 영역 -->
+        <div class="upload-wrapper">
+            <form method="post" enctype="multipart/form-data" action="/excelStream/upload">
+                <input type="file" name="file" accept=".xlsx,.xls"/>
+                <button type="submit">upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✅ 데이터 테이블 -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>보험자 구분</th><th>진료년도</th><th>연령</th><th>성별</th>
+                <th>요양기관종별</th><th>요양기관주소지</th><th>진료형태</th>
+                <th>진료인원(명)</th><th>입내원일수(일)</th><th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#rows}}
+                <tr>
+                    <td>{{insurer}}</td><td>{{year}}</td><td>{{age}}</td><td>{{gender}}</td>
+                    <td>{{institutionType}}</td><td>{{address}}</td><td>{{treatmentType}}</td>
+                    <td>{{patients}}</td><td>{{days}}</td>
+                    <td>
+                        <button onclick="editRow({{id}})">수정</button>
+                        <button onclick="deleteRow({{id}})">삭제</button>
+                    </td>
+                </tr>
+            {{/rows}}
+            {{^rows}}
+                <tr><td colspan="10" style="text-align: center;">데이터가 없습니다</td></tr>
+            {{/rows}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ✅ 페이징 -->
+    <div class="pagination">
+        {{#pagination}}
+            <button onclick="goToPage({{page}})">{{page}}</button>
+        {{/pagination}}
+    </div>
+</div>
+
+<script src="/script.js"></script>
+</body>
+</html>

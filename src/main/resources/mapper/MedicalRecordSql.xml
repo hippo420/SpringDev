@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="app.springdev.excel.repository.MedicalRepository">
+
+    <insert id="batchInsertMedicalRecords" parameterType="java.util.List">
+        INSERT INTO medical_record (
+        id,
+        insurer_type,
+        treatment_year,
+        age,
+        gender,
+        institution_type,
+        institution_address,
+        treatment_type,
+        patient_count,
+        hospital_days
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.insurerType},
+            #{item.treatmentYear},
+            #{item.age},
+            #{item.gender},
+            #{item.institutionType},
+            #{item.institutionAddress},
+            #{item.treatmentType},
+            #{item.patientCount},
+            #{item.hospitalDays}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertMedicalRecord" parameterType="app.springdev.excel.entity.MedicalRecordVo">
+        INSERT INTO medical_record (
+        id,
+        insurer_type,
+        treatment_year,
+        age,
+        gender,
+        institution_type,
+        institution_address,
+        treatment_type,
+        patient_count,
+        hospital_days
+        )
+        VALUES
+            (
+            #{id},
+            #{insurerType},
+            #{treatmentYear},
+            #{age},
+            #{gender},
+            #{institutionType},
+            #{institutionAddress},
+            #{treatmentType},
+            #{patientCount},
+            #{hospitalDays}
+            )
+    </insert>
+</mapper>
