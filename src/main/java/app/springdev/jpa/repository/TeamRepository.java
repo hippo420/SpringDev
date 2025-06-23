@@ -2,6 +2,8 @@ package app.springdev.jpa.repository;
 
 import app.springdev.jpa.entity.Team;
 import app.springdev.jpa.vo.TeamMemberVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @Query("SELECT new app.springdev.jpa.vo.TeamMemberVo(t.name, m.name) " +
             "FROM Team t JOIN t.members m")
     List<TeamMemberVo> findTeamMemberVoList();
+
+    @Query("SELECT t FROM Team t JOIN FETCH t.members")
+    Page<Team> fetchPaging(Pageable pageable); // OK
 }
