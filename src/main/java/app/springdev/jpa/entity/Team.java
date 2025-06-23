@@ -16,7 +16,7 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
-    @BatchSize(size = 3)
+    //@BatchSize(size = 3)
     private List<Member> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
