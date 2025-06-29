@@ -1,5 +1,6 @@
 package app.springdev.virtualthread.svc;
 
+import app.springdev.system.util.MemoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.Executors;
 public class VirtualThreadService {
     public void execute() {
         int taskCount = 10_000;
+        long startMem = MemoryUtil.usedMemoryInMB();
         long start = System.currentTimeMillis();
 
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
@@ -35,6 +37,8 @@ public class VirtualThreadService {
         }
 
         long end = System.currentTimeMillis();
+        long endMem = MemoryUtil.usedMemoryInMB();
         System.out.println("🪶 Virtual threads elapsed time: " + (end - start) + " ms");
+        System.out.println("🪶 Virtual threads memory usage: " + (endMem - startMem) + " MB");
     }
 }
