@@ -32,13 +32,14 @@ public class VirtualThreadService {
 
             latch.await();
 
+            long end = System.currentTimeMillis();
+            long endMem = MemoryUtil.usedMemoryInMB();
+            System.out.println("🪶 Virtual threads elapsed time: " + (end - start) + " ms");
+            System.out.println("🪶 Virtual threads memory usage: " + (endMem - startMem) + " MB");
         }catch (InterruptedException e) {
             log.error("Thread 실행중 오류발생 => {}",e.getMessage());
         }
 
-        long end = System.currentTimeMillis();
-        long endMem = MemoryUtil.usedMemoryInMB();
-        System.out.println("🪶 Virtual threads elapsed time: " + (end - start) + " ms");
-        System.out.println("🪶 Virtual threads memory usage: " + (endMem - startMem) + " MB");
+
     }
 }
