@@ -34,8 +34,8 @@ public class VirtualThreadService {
 
             long end = System.currentTimeMillis();
             long endMem = MemoryUtil.usedMemoryInMB();
-            System.out.println("🪶 Virtual threads elapsed time: " + (end - start) + " ms");
-            System.out.println("🪶 Virtual threads memory usage: " + (endMem - startMem) + " MB");
+            log.info("🪶 Virtual threads elapsed time: {} ms", (end - start));
+            log.info("🪶 Virtual threads memory usage: {} MB",(endMem - startMem));
         }catch (InterruptedException e) {
             log.error("Thread 실행중 오류발생 => {}",e.getMessage());
         }

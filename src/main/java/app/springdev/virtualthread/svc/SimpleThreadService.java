@@ -36,8 +36,8 @@ public class SimpleThreadService {
 
             long end = System.currentTimeMillis();
             long endMem = MemoryUtil.usedMemoryInMB();
-            System.out.println("🧵 Platform threads elapsed time: " + (end - start) + " ms");
-            System.out.println("🧵 Platform threads memory usage: " + (endMem - startMem) + " MB");
+            log.info("🧵 Platform threads elapsed time: {} ms",(end - start));
+            log.info("🧵 Platform threads memory usage: {} MB",(endMem - startMem));
 
         }catch (InterruptedException e) {
             log.error("Thread 실행중 오류발생 => {}",e.getMessage());
