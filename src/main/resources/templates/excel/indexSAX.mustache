@@ -2,27 +2,25 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>엑셀 업로드</title>
+    <title>엑셀 SAX 업로드</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <div class="container">
 
-    <h1>📁 엑셀 업로드</h1>
+    <h1>📁 SAX Parser 업로드</h1>
 
     <!-- ✅ 조회 영역 -->
     <div class="search-box">
 
-        </form>
         <!-- ✅ 업로드 버튼 영역 -->
         <div class="upload-wrapper">
-            <form method="post" enctype="multipart/form-data" action="/excel/upload">
+            <form method="post" enctype="multipart/form-data" action="/excelSAX/upload">
                 <input type="file" name="file" accept=".xlsx,.xls"/>
                 <button type="submit">upload</button>
             </form>
         </div>
     </div>
-
 
 </div>
 

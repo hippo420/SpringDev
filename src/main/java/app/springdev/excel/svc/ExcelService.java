@@ -18,7 +18,6 @@ public class ExcelService {
     public void readExcel(MultipartFile file, Model model) throws Exception {
         List<String[]> rowList = new ArrayList<>();
 
-
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
 
