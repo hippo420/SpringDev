@@ -12,11 +12,12 @@ import java.util.concurrent.Executors;
 public class VirtualThreadService {
     public void execute() {
         int taskCount = 100;
-        long startMem = MemoryUtil.usedMemoryInMB();
-        long start = System.currentTimeMillis();
 
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             CountDownLatch latch = new CountDownLatch(taskCount);
+
+            long startMem = MemoryUtil.usedMemoryInMB();
+            long start = System.currentTimeMillis();
 
             for (int i = 0; i < taskCount; i++) {
                 executor.submit(() -> {
