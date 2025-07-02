@@ -56,6 +56,9 @@ dependencies {
     //actuator & prometheus
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    //Local Db
+    runtimeOnly 'com.h2database:h2'
 }
 dependencyManagement {
     imports {
