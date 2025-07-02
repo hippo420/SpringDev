@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 @Service
 public class VirtualThreadService {
     public void execute() {
-        int taskCount = 10_000;
+        int taskCount = 100;
         long startMem = MemoryUtil.usedMemoryInMB();
         long start = System.currentTimeMillis();
 
@@ -21,7 +21,7 @@ public class VirtualThreadService {
             for (int i = 0; i < taskCount; i++) {
                 executor.submit(() -> {
                     try {
-                        Thread.sleep(100); // 100ms
+                        Thread.sleep(1000); // 100ms
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } finally {
