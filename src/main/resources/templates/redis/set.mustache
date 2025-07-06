@@ -1,0 +1,16 @@
+<!-- templates/redis/set.mustache -->
+<!DOCTYPE html>
+<html>
+<head><title>Redis Set</title></head>
+<body>
+<h2>Set: 좋아요한 사용자 목록</h2>
+<ul>
+    {{#members}}
+        <li>{{.}}</li>
+    {{/members}}
+    {{^members}}
+        <li>아직 좋아요가 없습니다.</li>
+    {{/members}}
+</ul>
+</body>
+</html>

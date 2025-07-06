@@ -1,0 +1,16 @@
+<!-- templates/redis/list.mustache -->
+<!DOCTYPE html>
+<html>
+<head><title>Redis List</title></head>
+<body>
+<h2>List: 채팅 메시지</h2>
+<ul>
+    {{#messages}}
+        <li>{{.}}</li>
+    {{/messages}}
+    {{^messages}}
+        <li>메시지가 없습니다.</li>
+    {{/messages}}
+</ul>
+</body>
+</html>

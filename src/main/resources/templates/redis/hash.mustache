@@ -1,0 +1,17 @@
+<!-- templates/redis/hash.mustache -->
+<!DOCTYPE html>
+<html>
+<head><title>Redis Hash</title></head>
+<body>
+<h2>Hash: 사용자 정보</h2>
+<table border="1">
+    <tr><th>필드</th><th>값</th></tr>
+    {{#fields}}
+        <tr><td>{{key}}</td><td>{{value}}</td></tr>
+    {{/fields}}
+    {{^fields}}
+        <tr><td colspan="2">데이터 없음</td></tr>
+    {{/fields}}
+</table>
+</body>
+</html>

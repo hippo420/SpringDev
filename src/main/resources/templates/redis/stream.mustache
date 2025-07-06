@@ -1,0 +1,16 @@
+<!-- templates/redis/stream.mustache -->
+<!DOCTYPE html>
+<html>
+<head><title>Redis Stream</title></head>
+<body>
+<h2>Stream: 실시간 로그</h2>
+<ul>
+    {{#messages}}
+        <li>[{{timestamp}}] {{user}}: {{message}}</li>
+    {{/messages}}
+    {{^messages}}
+        <li>기록 없음</li>
+    {{/messages}}
+</ul>
+</body>
+</html>

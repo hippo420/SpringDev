@@ -1,0 +1,13 @@
+<!-- templates/redis/bitmap.mustache -->
+<!DOCTYPE html>
+<html>
+<head><title>Redis Bitmap</title></head>
+<body>
+<h2>Bitmap: 출석 체크</h2>
+<p>날짜: {{date}}</p>
+<ul>
+    {{#attendances}}
+        <li>사용자 {{userId}}: {{#attended}}출석{{/attended}}{{^attended}}결석{{/attended}}</li>
+    {{/attendances}}
+</ul>
+</body>

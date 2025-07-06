@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redis String</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin-bottom: 30px; }
+        .divider { border-top: 1px solid #ccc; margin: 30px 0; }
+        label { display: inline-block; width: 80px; }
+        input[type="text"] { width: 200px; padding: 5px; margin-bottom: 10px; }
+        button { padding: 5px 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<h2>String: 사용자 토큰</h2>
+
+<div class="section">
+    <h3>1. 토큰 저장</h3>
+    <label for="userIdInput">사용자 ID:</label>
+    <input type="text" id="userIdInput"><br>
+    <label for="tokenInput">토큰:</label>
+    <input type="text" id="tokenInput"><br>
+    <button onclick="setToken()">저장</button>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+    <h3>2. 토큰 조회</h3>
+    <label for="searchUserId">사용자 ID:</label>
+    <input type="text" id="searchUserId">
+    <button onclick="fetchToken()">토큰 조회</button>
+    <ul id="tokenList"></ul>
+
+</div>
+
+<script>
+    function setToken() {
+        const userId = document.getElementById("userIdInput").value;
+        const token = document.getElementById("tokenInput").value;
+
+        if (!userId || !token) {
+            alert("사용자 ID와 토큰을 입력하세요.");
+            return;
+        }
+
+        fetch("/redis/string/set", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userId, token })
+        })
+                .then(response => response.ok ? console.log("저장되었습니다.") : alert("저장 실패"))
+                .catch(err => alert("오류 발생: " + err));
+    }
+
+    function fetchToken() {
+        const userId = document.getElementById("searchUserId").value;
+
+        fetch(`/redis/string/get?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("tokenList");
+                    list.innerHTML = "";
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        const li = document.createElement("li");
+                        li.textContent = "저장된 토큰이 없습니다.";
+                        list.appendChild(li);
+                        return;
+                    }
+
+                    data.forEach(entry => {
+                        const li = document.createElement("li");
+                        li.textContent = `${entry.userId} → ${entry.token}`;
+                        list.appendChild(li);
+                    });
+                })
+                .catch(err => alert("조회 실패: " + err));
+    }
+</script>
+
+</body>
+</html>

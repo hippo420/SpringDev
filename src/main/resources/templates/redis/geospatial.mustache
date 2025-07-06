@@ -1,0 +1,21 @@
+<!-- templates/redis/geospatial.mustache -->
+<!DOCTYPE html>
+<html>
+<head><title>Redis Geospatial</title></head>
+<body>
+<h2>Geospatial: 근처 매장</h2>
+<table border="1">
+    <tr><th>매장명</th><th>위도</th><th>경도</th></tr>
+    {{#stores}}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{latitude}}</td>
+            <td>{{longitude}}</td>
+        </tr>
+    {{/stores}}
+    {{^stores}}
+        <tr><td colspan="3">매장 없음</td></tr>
+    {{/stores}}
+</table>
+</body>
+</html>
