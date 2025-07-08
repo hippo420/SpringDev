@@ -1,5 +1,6 @@
 package app.springdev.redis.ctl;
 
+import app.springdev.redis.svc.RedisListService;
 import app.springdev.redis.svc.RedisStringService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RedisController {
 
-    private final RedisStringService redisService;
+    private final RedisStringService redisStringService;
+    private final RedisListService redisListService;
+    /*
+        Desc Redis - String
+     */
 
     @GetMapping("/index")
     public String redisIndex() {
@@ -35,7 +40,7 @@ public class RedisController {
         String userId = payload.get("userId");
         String token = payload.get("token");
         log.info("userId = " + userId + ", token = " + token);
-        return redisService.saveToken(userId,token);
+        return redisStringService.saveToken(userId,token);
     }
 
     @ResponseBody
@@ -43,16 +48,37 @@ public class RedisController {
     public List<Map<String, String>> stringGet(@RequestParam String userId) {
         log.info("[Key:userId 조회] > {}", userId);
 
-        return redisService.getToken(userId);
+        return redisStringService.getToken(userId);
     }
 
 
+    /*
+        Desc Redis - List
+     */
+
     @GetMapping("/list")
-    public String listView(Model model) {
-        model.addAttribute("messages", List.of("안녕하세요", "Redis 공부 중", "좋아요!"));
+    public String listView() {
         return "redis/list";
     }
 
+    @PostMapping("/list/push")
+    public String listPush(@RequestBody Map<String, String> payload) {
+
+        payload.entrySet().forEach(entry -> {
+            log.info("key [{}], Value [{}]",entry.getKey().toString(),entry.getValue().toString());
+        });
+        String msg = payload.get("message");
+        String type = payload.get("direction");
+        redisListService.pushMessage(msg,type);
+        return "redis/list";
+    }
+
+
+
+
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/hash")
     public String hashView(Model model) {
         List<Map<String, String>> fields = List.of(
@@ -63,12 +89,18 @@ public class RedisController {
         return "redis/hash";
     }
 
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/set")
     public String setView(Model model) {
         model.addAttribute("members", List.of("user1", "user2", "user3"));
         return "redis/set";
     }
 
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/sortedset")
     public String sortedSetView(Model model) {
         List<Map<String, Object>> rankings = List.of(
@@ -80,6 +112,9 @@ public class RedisController {
         return "redis/sortedset";
     }
 
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/hyperloglog")
     public String hyperLogLogView(Model model) {
         model.addAttribute("date", "2025-07-05");
@@ -87,6 +122,9 @@ public class RedisController {
         return "redis/hyperloglog";
     }
 
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/bitmap")
     public String bitmapView(Model model) {
         List<Map<String, Object>> attendances = List.of(
@@ -99,6 +137,9 @@ public class RedisController {
         return "redis/bitmap";
     }
 
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/geospatial")
     public String geospatialView(Model model) {
         List<Map<String, Object>> stores = List.of(
@@ -109,6 +150,9 @@ public class RedisController {
         return "redis/geospatial";
     }
 
+    /*
+        Desc Redis - List
+     */
     @GetMapping("/stream")
     public String streamView(Model model) {
         List<Map<String, String>> messages = List.of(
