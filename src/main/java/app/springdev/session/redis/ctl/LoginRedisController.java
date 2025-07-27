@@ -28,6 +28,7 @@ public class LoginRedisController {
         log.info("아이디 : {}, 비번: {}",user.getUserId(),user.getPassword());
         HttpSession session = request.getSession(true);
         session.setAttribute("userId", user.getUserId());
+        session.setAttribute("최근조회상품", "아이폰, 폴드7");
         log.info("생성된 세션: {}",session.getId());
         // Session의 유효 시간 설정 (1800초 = 30분)
         session.setMaxInactiveInterval(1800);
