@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 @Aspect
 @Component
 public class SessionRedisAspect {
+
     private static final String SESSION_KEY = "SESSION";
     private static final String REDIS_SESSION_KEY = ":sessions:";
 
@@ -34,8 +35,8 @@ public class SessionRedisAspect {
     @Around("execution(public * app.springdev.session.redis..ctl..goHome(..))")
     public Object checkSession(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("AOP 세션 체크 진입: method = {}", joinPoint.getSignature());
+
         // 현재 HTTP 요청 객체 가져오기
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Object[] args = joinPoint.getArgs();
 
         for (Object arg : args) {
@@ -48,29 +49,12 @@ public class SessionRedisAspect {
                     log.warn("세션 없음 또는 로그인 정보 없음. 접근 거부.");
                     throw new IllegalStateException("로그인이 필요합니다.");
                 }else{
-                    log.info("storedSessionId = {}", storedSessionId);
-                    request.setAttribute(SESSION_KEY, storedSessionId);
+                    log.info("AOP - userId = {}, sessionId= {}", userId, storedSessionId);
                 }
             }
         }
-
-
-        // 로그에 메서드명 표시
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        Method method = methodSignature.getMethod();
-        log.info("실행 대상 메서드: {}.{}", method.getDeclaringClass().getSimpleName(), method.getName());
 
         return joinPoint.proceed();
     }
 
-    private String getSessionIdByCookie(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("SESSION".equals(cookie.getName())) { // 기본 spring-session Redis 세션 쿠키 이름
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
 }
