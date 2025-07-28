@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>HttpSession 로그인 - MyService</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            color: #1e1f21;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #3182f6;
+            outline: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: #3182f6;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-login:hover {
+            background-color: #1e63d5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .footer a {
+            color: #3182f6;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-title">로그인</div>
+
+    <form action="/session/http/prcLogin" method="post">
+        <div class="form-group">
+            <label for="userId">아이디</label>
+            <input type="text" id="userId" name="userId" placeholder="아이디를 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+        </div>
+
+        <button type="submit" class="btn-login">로그인</button>
+    </form>
+
+    <div class="footer">
+        계정이 없으신가요? <a href="/signup">회원가입</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,25 +1,25 @@
-package app.springdev.session.redis.ctl;
+package app.springdev.session.http.ctl;
 
 import app.springdev.session.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Slf4j
 @Controller
-@RequestMapping("/session/redis")
-public class LoginRedisController {
+@RequestMapping("/session/http")
+public class LoginHttpController {
 
-
-    @Autowired
-    private UserSessionRegistry userSessionRegistry;
+    public static Map<String, String> userSessionMap = new ConcurrentHashMap<>();
 
     @GetMapping("login")
     public String loginView() {
-        return "session/loginredis";
+        return "session/loginhttp";
     }
 
     @PostMapping("prcLogin")
@@ -28,18 +28,19 @@ public class LoginRedisController {
         HttpSession session = request.getSession(true);
         session.setAttribute("userId", user.getUserId());
         session.setAttribute("최근조회상품", "아이폰, 폴드7");
-        log.info("생성된 세션: {}",session.getId());
-        // Session의 유효 시간 설정 (1800초 = 30분)
-        session.setMaxInactiveInterval(1800);
-        userSessionRegistry.registerSession(user.getUserId(), session.getId());
 
-        return "redirect:/session/redis/home?userId="+user.getUserId();
+        log.info("생성된 세션: {}",session.getId());
+        userSessionMap.put(user.getUserId(), session.getId());
+        session.setMaxInactiveInterval(1800);
+
+        return "redirect:/session/http/home?userId="+user.getUserId();
     }
 
     @GetMapping("home")
     public void goHome(HttpServletRequest request, @RequestParam String userId) {
 
-        log.info("{}사용자 세션 - [{}]",userId);
+        log.info("{}사용자 세션 - [{}]",userId, userSessionMap.get(userId));
         log.info("비지니스 로직 실행!!");
+
     }
 }

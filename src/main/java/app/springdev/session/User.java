@@ -1,4 +1,4 @@
-package app.springdev.session.redis.entity;
+package app.springdev.session;
 
 import jakarta.persistence.*;
 import lombok.Getter;
