@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>응답 테스트</title>
+    <style>
+        body{font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', Arial; background:#f5f7fb; color:#222; padding:32px}
+        .card{max-width:640px;margin:32px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(31,41,55,0.06)}
+        h1{margin:0 0 12px;font-size:22px}
+        .btn{display:inline-block;padding:10px 14px;margin:6px 6px 0 0;border-radius:6px;text-decoration:none;border:1px solid #e5e7eb;background:#f9fafb;cursor:pointer}
+        .btn.primary{background:#2563eb;color:#fff;border-color:transparent}
+        pre{background:#f3f4f6;padding:12px;border-radius:6px;margin-top:16px;overflow-x:auto}
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Spring 응답 방식 테스트</h1>
+
+
+    <button class="btn primary" onclick="callApi('/body')">@ResponseBody 응답</button>
+    <button class="btn primary" onclick="callApi('/entity')">ResponseEntity 응답</button>
+    <form method="post" action="/response/download">
+        <button type="submit" class="btn">파일 다운로드</button>
+    </form>
+    <form method="post" action="/response/downloadstream">
+        <button type="submit" class="btn">파일 다운로드(스트리밍)</button>
+    </form>
+
+    <pre id="output">응답 내용이 여기에 표시됩니다...</pre>
+</div>
+
+
+<script>
+    async function callApi(endpoint) {
+        try {
+            const response = await fetch("/response"+endpoint);
+            const text = await response.text();
+
+
+            let content = `Status: ${response.status} ${response.statusText}\n`;
+            response.headers.forEach((v,k)=>{
+                content += `${k}: ${v}\n`;
+            });
+            content += `\nBody:\n${text}`;
+
+
+            document.getElementById('output').textContent = content;
+        } catch (err) {
+            document.getElementById('output').textContent = '에러 발생: ' + err;
+        }
+    }
+</script>
+</body>
+</html>
