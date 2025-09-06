@@ -14,7 +14,7 @@ public class ConfigPropertiesLogger {
 
     @EventListener(ApplicationReadyEvent.class)
     public void logConfigProperties() {
-        System.out.println("🔧 [Spring Config Properties]");
+        log.info("🔧 [Spring Config Properties]");
 
         // 출력하고 싶은 config 속성 키 목록
         String[] keys = {
