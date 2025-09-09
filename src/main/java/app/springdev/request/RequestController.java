@@ -21,16 +21,17 @@ public class RequestController {
     }
 
     @GetMapping("/queryParam1")
-    public void queryParam1(@RequestParam(required = false) String param, HttpServletRequest request) {
+    public void queryParam1(@RequestParam(required = false, defaultValue = "UNDEFINED") String param, HttpServletRequest request) {
         printRequest(request);
         log.info("파리미터 : {}", param == null ? "파라미터가 없습니다." : param);
     }
 
     //2.URL 경로 변수
-    @GetMapping("/users/{id}")
-    public void getUser(@PathVariable(required = false) Long id, HttpServletRequest request) {
+    @GetMapping("/users/{id}/{opt}")
+    public void getUser(@PathVariable(required = false) Long id,@PathVariable(required = false) String opt, HttpServletRequest request) {
         printRequest(request);
         log.info("파리미터 : {}", id == null ? "파라미터가 없습니다." : id);
+        log.info("파리미터 : {}", opt == null ? "파라미터가 없습니다." : opt);
     }
 
     //3.JSON (또는 XML) 데이터를 객체로 받기
@@ -53,6 +54,14 @@ public class RequestController {
         log.info("name: {}", userDto.getName());
         log.info("age: {}", userDto.getAge());
         log.info("email: {}", userDto.getEmail());
+    }
+
+    //4.폼 데이터나 쿼리 파라미터를 객체로 매핑
+    @RequestMapping("/register1")
+    public void register(@ModelAttribute String userId, HttpServletRequest request) {
+        printRequest(request);
+        log.info("요청 사용자 데이터");
+        log.info("id: {}", userId);
     }
 
     //5.요청 헤더 받기
