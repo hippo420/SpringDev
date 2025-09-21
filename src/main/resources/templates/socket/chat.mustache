@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WebSocket 채팅 · Toss-Style · Mustache</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>
+    <style>
+        :root {
+            --bg: #f7f8fa;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #3182f6;
+            --primary-strong: #1f6ae5;
+            --success: #15c27e;
+            --danger: #ef4444;
+            --radius-xl: 20px;
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Pretendard", system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Apple SD Gothic Neo, \"Malgun Gothic\", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .wrap {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100%;
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            gap: 16px;
+        }
+        header.header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--muted); }
+        .dot.live { background: var(--success); }
+        .dot.off { background: var(--danger); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: 1fr auto;
+            min-height: 60vh;
+        }
+
+        .messages {
+            padding: 20px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 60px 20px;
+            font-size: 14px;
+        }
+
+        .msg {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 8px 0 14px;
+            max-width: 70%;
+        }
+        .msg.you { align-self: flex-end; }
+
+        .bubble {
+            padding: 12px 14px;
+            border-radius: 16px;
+            line-height: 1.45;
+            font-size: 14px;
+            background: #f2f4f8;
+        }
+        .msg.you .bubble { background: var(--primary); color: white; }
+
+        .meta { font-size: 11px; color: var(--muted); }
+        .msg.you .meta { text-align: right; }
+
+        .composer {
+            border-top: 1px solid var(--border);
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            background: var(--card);
+        }
+        .input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: #f2f4f8;
+            border-radius: 14px;
+            border: 1px solid transparent;
+        }
+        .input:focus-within { border-color: var(--primary); background: #eef5ff; }
+        .input input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 15px;
+            width: 100%;
+        }
+        .btn {
+            padding: 12px 18px;
+            font-weight: 600;
+            border-radius: 14px;
+            border: 1px solid var(--primary);
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: transform .02s ease, background .15s ease;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn:disabled { background: #cbd5e1; border-color: #cbd5e1; cursor: not-allowed; }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header class="header">
+        <div class="title">WebSocket 채팅</div>
+        <div class="status" id="status">
+            <span class="dot off" id="dot"></span>
+            <span id="statusText">연결 중…</span>
+        </div>
+    </header>
+
+    <section class="card">
+        <div class="messages" id="messages"></div>
+        <div class="composer">
+            <div class="input">
+                <input id="msgInput" type="text" placeholder="메시지를 입력하세요" autocomplete="off" />
+            </div>
+            <button id="sendBtn" class="btn" disabled>전송</button>
+        </div>
+    </section>
+
+    <footer>Mustache 템플릿 · Toss-Style UI</footer>
+</div>
+
+<script id="tpl-chat" type="x-tmpl-mustache">
+    {{#hasMessages}}
+    {{#items}}
+        <div class="msg {{side}}">
+          <div class="bubble">{{text}}</div>
+          <div class="meta">{{time}}</div>
+        </div>
+    {{/items}}
+{{/hasMessages}}
+    {{^hasMessages}}
+        <div class="empty">아직 메시지가 없습니다. 첫 메시지를 보내보세요.</div>
+    {{/hasMessages}}
+  </script>
+
+<script>
+
+    const state = {
+        messages: [] // { text, time, side: 'you' | '' }
+    };
+
+    const $messages = document.getElementById('messages');
+    const $input = document.getElementById('msgInput');
+    const $send = document.getElementById('sendBtn');
+    const $dot = document.getElementById('dot');
+    const $statusText = document.getElementById('statusText');
+
+    function render() {
+        const tpl = document.getElementById('tpl-chat').innerHTML;
+        const view = {
+            hasMessages: state.messages.length > 0,
+            items: state.messages
+        };
+        const html = Mustache.render(tpl, view);
+        $messages.innerHTML = html;
+        $messages.scrollTop = $messages.scrollHeight;
+    }
+
+
+    function formatTime(date = new Date()) {
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    let ws;
+    function connect() {
+        ws = new WebSocket('ws://localhost:8080/chat');
+
+        ws.addEventListener('open', () => {
+            $dot.classList.remove('off');
+            $dot.classList.add('live');
+            $statusText.textContent = '연결됨';
+            $send.disabled = false;
+        });
+
+        ws.addEventListener('message', (event) => {
+            state.messages.push({ text: event.data, time: formatTime(), side: '' });
+            render();
+        });
+
+        ws.addEventListener('close', () => {
+            $dot.classList.remove('live');
+            $dot.classList.add('off');
+            $statusText.textContent = '연결 종료';
+            $send.disabled = true;
+
+            setTimeout(connect, 1500);
+        });
+
+        ws.addEventListener('error', () => {
+            $statusText.textContent = '에러 발생';
+        });
+    }
+    connect();
+
+
+    function sendMessage() {
+        const text = $input.value.trim();
+        if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
+        ws.send(text);
+        state.messages.push({ text, time: formatTime(), side: 'you' });
+        $input.value = '';
+        render();
+        $input.focus();
+    }
+
+    $send.addEventListener('click', sendMessage);
+    $input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
