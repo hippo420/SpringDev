@@ -1,12 +1,10 @@
-package app.springdev.socket.tcp;
-
-import org.springframework.core.io.ClassPathResource;
+package app.springdev.socket.tcp.file;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class TcpFileServerMain {
+public class TcpServerSocketFileServerMain {
     public static void main(String[] args) {
         int port = 5000;
         try (ServerSocket serverSocket = new ServerSocket(port)) {

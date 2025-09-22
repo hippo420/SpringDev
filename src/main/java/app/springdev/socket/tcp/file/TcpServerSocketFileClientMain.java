@@ -1,11 +1,9 @@
-package app.springdev.socket.tcp;
-
-import org.springframework.core.io.ClassPathResource;
+package app.springdev.socket.tcp.file;
 
 import java.io.*;
 import java.net.Socket;
 
-public class TcpFileClientMain {
+public class TcpServerSocketFileClientMain {
     public static void main(String[] args) {
         String serverAddress = "127.0.0.1";
         int port = 5000;

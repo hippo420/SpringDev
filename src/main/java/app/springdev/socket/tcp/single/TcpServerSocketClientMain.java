@@ -1,13 +1,12 @@
-package app.springdev.socket.tcp;
+package app.springdev.socket.tcp.single;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
-public class TcpClientMain {
+public class TcpServerSocketClientMain {
     public static void main(String[] args) {
         try (Socket socket = new Socket("localhost", 5000)) {
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));

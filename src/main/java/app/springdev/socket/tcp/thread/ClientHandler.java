@@ -1,4 +1,4 @@
-package app.springdev.socket.tcp;
+package app.springdev.socket.tcp.thread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +26,13 @@ public class ClientHandler implements Runnable{
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                socket.close();
+                System.out.println("클라이언트 연결 종료");
+            } catch (IOException e) {
+                System.err.println("소켓 종료 중 오류: " + e.getMessage());
+            }
         }
     }
 }
