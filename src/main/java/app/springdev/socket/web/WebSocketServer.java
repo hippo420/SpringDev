@@ -38,13 +38,13 @@ public class WebSocketServer {
 
     // 메인 메서드로 서버 실행
     public static void main(String[] args) throws Exception {
-        Server server = new Server("localhost", 9090, "/ws", WebSocketServer.class);
-        try {
-            server.start();
-            System.out.println("WebSocket 서버 실행 중... ws://localhost:8080/ws/chat");
-            new BufferedReader(new InputStreamReader(System.in)).readLine();
-        } finally {
-            server.stop();
-        }
+//        Server server = new Server("localhost", 9090, "/ws", WebSocketServer.class);
+//        try {
+//            server.start();
+//            System.out.println("WebSocket 서버 실행 중... ws://localhost:8080/ws/chat");
+//            new BufferedReader(new InputStreamReader(System.in)).readLine();
+//        } finally {
+//            server.stop();
+//        }
     }
 }
