@@ -21,4 +21,33 @@ public class MultiThreadedTcpServerHandlerMain {
             System.err.println("서버 소켓 생성 실패: " + e.getMessage());
         }
     }
+
+    private String getResponseBody() {
+        return """
+                <html>
+                    <head>
+                        <title>Home</title>
+                    </head>
+                    <body>
+                        <h1>Minseok Home Page</h1>
+                        <p>Java Tutorials</p>
+                        <ul>
+                            <li>
+                                <a href="/get-started-with-java-series"> Java </a>
+                            </li>
+                            <li>
+                                <a href="/spring-boot"> Spring </a>
+                            </li>
+                            <li>
+                                <a href="/learn-jpa-hibernate"> Hibernate </a>
+                            </li>
+                        </ul>
+                     </body>
+                 </html>
+            """;
+    }
+
+    private int getBodyLength(String body) {
+        return body.length();
+    }
 }
