@@ -17,7 +17,7 @@ public class UDPClientHandler implements Runnable{
     public void run() {
         try {
             String msg = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("수신 메시지: " + msg);
+
 
             String response = "서버 응답 (멀티쓰레드): " + msg;
             byte[] sendData = response.getBytes();

@@ -1,25 +1,37 @@
 package app.springdev.socket.udp;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+
+import java.io.*;
+import java.net.*;
 
 public class UdpClientMain {
-    public static void main(String[] args) {
-        try (Socket socket = new Socket("localhost", 5000)) {
-            BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    public static void main(String[] args) throws Exception {
+        DatagramSocket clientSocket = new DatagramSocket();
+        InetAddress serverAddress = InetAddress.getByName("localhost");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            String msg;
-            while ((msg = input.readLine()) != null) {
-                out.println(msg);
-                System.out.println("서버 응답: " + in.readLine());
+        System.out.println("UDP Client started. Type messages to send:");
+
+        while (true) {
+            String msg = reader.readLine(); // 콘솔 입력
+            if (msg == null || msg.equalsIgnoreCase("exit")) {
+                break; // 종료 조건
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            byte[] sendBuffer = msg.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, serverAddress, 5000);
+            clientSocket.send(sendPacket);
+
+            // 서버 응답 수신
+            byte[] receiveBuffer = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            clientSocket.receive(receivePacket);
+
+            String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            System.out.println("Server response: " + response);
         }
+
+        clientSocket.close();
+        System.out.println("UDP Client terminated.");
     }
 }

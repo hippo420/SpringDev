@@ -9,7 +9,7 @@ public class SingleThreadUdpServer {
 
     public static void main(String[] args) throws Exception {
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
-            System.out.println("싱글 쓰레드 UDP 서버 시작");
+            System.out.println("Single Thread UDP server Start");
             //socket.setSoTimeout(5000);
             socket.setReuseAddress(true);
             // 수신 버퍼 크기를 1MB로 설정 (수신 패킷 손실 방지)
@@ -23,9 +23,9 @@ public class SingleThreadUdpServer {
                 socket.receive(packet);
 
                 String msg = new String(packet.getData(), 0, packet.getLength());
-                System.out.println("수신 메시지: " + msg);
+                System.out.println("Receviced Message: " + msg);
 
-                String response = "서버 응답: " + msg;
+                String response = "Server Response: " + msg;
                 byte[] sendData = response.getBytes();
 
                 DatagramPacket sendPacket = new DatagramPacket(
