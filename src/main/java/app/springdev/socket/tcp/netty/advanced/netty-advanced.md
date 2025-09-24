@@ -5,17 +5,17 @@
  - 메시지 경계 처리: LineBasedFrameDecoder
  - 직렬화: Jackson 으로 JSON 처리
 
-## 3) netty-echo-protocol (프레이밍 + JSON)
+## 3) netty-echo-protocol (프레이밍 + JSON) /protocol
  - 테스트: send JSON line terminated with \n. Example JSON
 ```json
 {"type":"greet","sessionId":"s1","payload":"hello"}
 ```
 
-## 4) netty-echo-performance (튜닝 예제)
+## 4) netty-echo-performance (튜닝 예제) /performance
 
-## 5) netty-echo-stability (IdleState, 연결 관리, Backpressure)
+## 5) netty-echo-stability (IdleState, 연결 관리, Backpressure) /stability
 
-## 6) netty-echo-architecture (Kafka + Redis + 간단 모니터링 예시)
+## 6) netty-echo-architecture (Kafka + Redis + 간단 모니터링 예시) /arch
  - 실제 배포 시:
 
 Kafka 연결 설정(보안, acks, retries) 튜닝
