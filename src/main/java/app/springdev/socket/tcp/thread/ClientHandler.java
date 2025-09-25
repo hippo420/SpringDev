@@ -15,13 +15,20 @@ public class ClientHandler implements Runnable{
 
     @Override
     public void run() {
+        String threadName = Thread.currentThread().getName();
+        System.out.println("Socket-"+System.identityHashCode(this.socket)+" [" + threadName + "] 클라이언트 처리 시작: "
+                + socket.getInetAddress().getHostAddress());
         try (
+
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
+
         ) {
             String msg;
             while ((msg = in.readLine()) != null) {
-                System.out.println("[" + socket.getInetAddress() + "] " + msg);
+
+                System.out.println(" [" + threadName + "] 수신: " + msg);
+
                 out.println("Echo: " + msg);
             }
         } catch (IOException e) {

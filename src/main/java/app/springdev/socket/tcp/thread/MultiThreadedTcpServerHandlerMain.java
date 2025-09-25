@@ -5,10 +5,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class MultiThreadedTcpServerHandlerMain {
-    private static final int PORT = 5000;
+    private static final int PORT = 5001;
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            serverSocket.setReuseAddress(true);
             System.out.println("멀티쓰레드 TCP 서버 시작");
 
             while (true) {
