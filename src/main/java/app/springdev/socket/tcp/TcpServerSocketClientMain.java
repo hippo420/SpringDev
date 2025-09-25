@@ -8,8 +8,8 @@ import java.net.Socket;
 
 public class TcpServerSocketClientMain {
     public static void main(String[] args) {
-        try (Socket socket = new Socket("localhost", 5001)) {
-            System.out.println("Client 접속!!");
+        try (Socket socket = new Socket("localhost", 5000)) {
+            System.out.println("Client Joined: !!");
             socket.setSoTimeout(5000);   //최대 대기 시간 (기본값 :0 - 무한대기)
             /** Nagle 알고리즘 사용 여부
               * false(기본): 작은 패킷 여러 개를 묶어서 전송 → 효율↑, 지연 발생 가능.

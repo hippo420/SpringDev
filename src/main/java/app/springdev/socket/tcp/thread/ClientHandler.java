@@ -16,7 +16,7 @@ public class ClientHandler implements Runnable{
     @Override
     public void run() {
         String threadName = Thread.currentThread().getName();
-        System.out.println("Socket-"+System.identityHashCode(this.socket)+" [" + threadName + "] 클라이언트 처리 시작: "
+        System.out.println("Socket-"+System.identityHashCode(this.socket)+" [" + threadName + "]  Process: "
                 + socket.getInetAddress().getHostAddress());
         try (
 
@@ -27,7 +27,7 @@ public class ClientHandler implements Runnable{
             String msg;
             while ((msg = in.readLine()) != null) {
 
-                System.out.println(" [" + threadName + "] 수신: " + msg);
+                System.out.println(" [" + threadName + "] Received: " + msg);
 
                 out.println("Echo: " + msg);
             }
@@ -36,9 +36,9 @@ public class ClientHandler implements Runnable{
         }finally {
             try {
                 socket.close();
-                System.out.println("클라이언트 연결 종료");
+                System.out.println("Terminated From Client");
             } catch (IOException e) {
-                System.err.println("소켓 종료 중 오류: " + e.getMessage());
+                System.err.println("Error on Terminated From Client: " + e.getMessage());
             }
         }
     }

@@ -22,5 +22,4 @@ public class MultiThreadedTcpServerHandlerMain {
             System.err.println("서버 소켓 생성 실패: " + e.getMessage());
         }
     }
-
 }
