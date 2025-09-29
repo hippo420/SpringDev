@@ -11,14 +11,15 @@ public class MultiThreadUdpServer {
 
     public static void main(String[] args) throws Exception {
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
-            System.out.println("멀티쓰레드 UDP 서버 시작");
+            System.out.println("MultiThreadUdpServer started...");
             byte[] buffer = new byte[BUFFER_SIZE];
 
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                new Thread(new UDPClientHandler(socket, packet)).start();
+                UDPClientHandler handler = new UDPClientHandler(socket, packet);
+                new Thread(handler).start();
             }
         }
     }

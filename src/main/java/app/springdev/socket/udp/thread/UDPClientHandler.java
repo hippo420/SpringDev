@@ -18,8 +18,8 @@ public class UDPClientHandler implements Runnable{
         try {
             String msg = new String(packet.getData(), 0, packet.getLength());
 
-
-            String response = "서버 응답 (멀티쓰레드): " + msg;
+            System.out.println("Server Response["+Thread.currentThread().getName()+"]: " + msg);
+            String response = "Server Response: " + msg;
             byte[] sendData = response.getBytes();
 
             DatagramPacket sendPacket = new DatagramPacket(
@@ -27,7 +27,7 @@ public class UDPClientHandler implements Runnable{
             socket.send(sendPacket);
 
         } catch (Exception e) {
-            System.err.println("처리 중 오류: " + e.getMessage());
+            System.err.println("Error on Processing: " + e.getMessage());
         }
     }
 }
