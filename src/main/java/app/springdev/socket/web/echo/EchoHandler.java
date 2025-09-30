@@ -11,9 +11,9 @@ public class EchoHandler extends TextWebSocketHandler {
         String payload = message.getPayload().toString();
 
         if (payload.startsWith("chat:")) {
-            session.sendMessage(new TextMessage("채팅 처리: " + payload));
+            session.sendMessage(new TextMessage("채팅 처리: " + payload.replaceAll("chat:", "")));
         } else if (payload.startsWith("notice:")) {
-            session.sendMessage(new TextMessage("공지 처리: " + payload));
+            session.sendMessage(new TextMessage("공지 처리: " + payload.replaceAll("notice:", "")));
         } else {
             session.sendMessage(new TextMessage("알 수 없는 요청"));
         }
