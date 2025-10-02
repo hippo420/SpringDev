@@ -12,7 +12,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/queue"); // 구독 prefix
+        config.enableSimpleBroker("/chat", "/notice"); // 구독 prefix
         config.setApplicationDestinationPrefixes("/app"); // 전송 prefix
     }
 
