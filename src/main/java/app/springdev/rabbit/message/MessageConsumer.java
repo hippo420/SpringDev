@@ -1,6 +1,6 @@
 package app.springdev.rabbit.message;
 
-import app.springdev.rabbit.config.RabbitConfig;
+import app.springdev.rabbit.config.RabbitSingleConfig;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class MessageConsumer {
     // 🌟 수동 ACK(Manual Acknowledgement) 모드 사용: 실무에서 필수
     // spring.rabbitmq.listener.simple.acknowledge-mode: manual 설정이 필요
-    @RabbitListener(queues = RabbitConfig.QUORUM_QUEUE_NAME)
+    @RabbitListener(queues = RabbitSingleConfig.QUORUM_QUEUE_NAME)
     public void receiveMessage(Object message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
         try {
             log.info("Received message: {}", message);

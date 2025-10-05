@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitConfig {
+public class RabbitSingleConfig {
     public static final String EXCHANGE_NAME = "my_exchange";
     public static final String QUORUM_QUEUE_NAME = "trade.quorum.queue";
     public static final String ROUTING_KEY = "trade.key";
