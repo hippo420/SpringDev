@@ -12,15 +12,12 @@ public class RabbitConfig {
     public static final String QUORUM_QUEUE_NAME = "trade.quorum.queue";
     public static final String ROUTING_KEY = "trade.key";
 
-    //Dead Letter Exchange 및 Queue 정의
-    public static final String DLX_EXCHANGE_NAME = EXCHANGE_NAME + ".dlx";
-    public static final String DLQ_QUEUE_NAME = QUORUM_QUEUE_NAME + ".dlq";
 
 
     // 1. Exchange 생성 (일반적인 Direct Exchange 사용)
     @Bean
-    public TopicExchange  topicExchange() {
-        return new TopicExchange (EXCHANGE_NAME);
+    public DirectExchange  directExchange() {
+        return new DirectExchange (EXCHANGE_NAME);
     }
 
     // 2. 🌟 Quorum Queue 생성 (실무 권장)
@@ -35,8 +32,8 @@ public class RabbitConfig {
 
     // 3. Exchange와 Queue를 라우팅 키로 바인딩
     @Bean
-    public Binding binding(TopicExchange topicExchange, Queue quorumQueue) {
-        return BindingBuilder.bind(quorumQueue).to(topicExchange).with(ROUTING_KEY);
+    public Binding binding(DirectExchange directExchange, Queue quorumQueue) {
+        return BindingBuilder.bind(quorumQueue).to(directExchange).with(ROUTING_KEY);
     }
 
     // 4. 메시지 변환기 (MessageConverter) 설정: JSON 직렬화/역직렬화
