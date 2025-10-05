@@ -1,4 +1,4 @@
-package app.springdev.rabbit.message;
+package app.springdev.rabbit.basic.message;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
@@ -23,10 +23,10 @@ public class MessageProducer {
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             if (ack) {
                 // 메시지가 브로커(Exchange)에 성공적으로 도착 (ACK)
-                log.info("Broker ACK: Success. ID: {}", correlationData.getId());
+                log.info("Broker ACK: Success. ID: {}", correlationData);
             } else {
                 // 메시지가 브로커에 도착 실패 또는 NACK
-                log.error("Broker NACK: Fail. Cause: {}. ID: {}", cause, correlationData.getId());
+                log.error("Broker NACK: Fail. Cause: {}. ID: {}", cause, correlationData);
                 // 이곳에서 DB에 저장된 메시지를 재전송 시도하는 로직을 구현합니다.
             }
         });

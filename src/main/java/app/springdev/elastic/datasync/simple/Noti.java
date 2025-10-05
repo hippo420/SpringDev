@@ -33,7 +33,7 @@ public class Noti {
                 ", content='" + content + '\'' +
                 ", writer='" + writer + '\'' +
                 ", category='" + category + '\'' +
-                ", views='" + views + '\'' +
+                ", views=" + views  +
                 ", createdAt='" + createdAt + '\'' +
                 '}';
     }

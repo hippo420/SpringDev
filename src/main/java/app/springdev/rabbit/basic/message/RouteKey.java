@@ -1,4 +1,4 @@
-package app.springdev.rabbit.message;
+package app.springdev.rabbit.basic.message;
 
 public enum RouteKey {
     // 라우팅 키로 사용될 문자열을 생성자에서 설정

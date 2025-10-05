@@ -1,6 +1,6 @@
-package app.springdev.rabbit.message;
+package app.springdev.rabbit.basic.message;
 
-import app.springdev.rabbit.config.RabbitSingleConfig;
+import app.springdev.rabbit.basic.config.RabbitSingleConfig;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
