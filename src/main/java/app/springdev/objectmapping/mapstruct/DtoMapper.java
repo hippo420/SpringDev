@@ -4,14 +4,30 @@ import app.springdev.objectmapping.dto.Company;
 import app.springdev.objectmapping.dto.ExtraDto;
 import app.springdev.objectmapping.dto.SourceDto;
 import app.springdev.objectmapping.dto.TargetDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 import java.util.UUID;
 
-//ibatis랑 구분처리 componentModel
-@Mapper(imports = UUID.class,componentModel = "spring")
+/**
+ * componentModel : 매퍼를 빈으로 만들어야 하는 경우, 아래와 같이 설정하면 빈으로 등록
+ * unmappedTargetPolicy : Target 필드는 존재하는데 source의 필드가 없는 경우에 대한 정책
+    #ERROR : 매핑 대상이 없는 경우, 빌드 시 Error 이 발생
+    #WARN : 매핑 대상이 없는 경우, 빌드 시 warn 이 발생
+    #IGNORE  : 매핑 대상이 없는 경우 무시하고 매핑
+
+ * nullValueMapMappingStrategy : source가 null 인 경우에 제어할 수 있는 null 정책
+    #RETURN_NULL    : source가 null 일 경우, target을 null 로 설정
+    #RETURN_DEFAULT : source가 null 일 경우, default 값으로 설정
+ * nullValueIterableMappingStrategy : source가 null 인 경우 iterables나 map에 해당되는 정책
+    #RETURN_NULL    : source가 null 일 경우, target을 null 로 설정
+    #RETURN_DEFAULT : iterable에는 collection이 매핑 되며, map은 빈 map 으로 매핑
+ */
+@Mapper(imports = UUID.class
+        , componentModel = "spring"
+        , unmappedTargetPolicy = ReportingPolicy.IGNORE //ERROR,WARN
+        , nullValueMapMappingStrategy = NullValueMappingStrategy.RETURN_NULL     //RETURN_DEFAULT
+        , nullValueIterableMappingStrategy = NullValueMappingStrategy.RETURN_NULL //RETURN_DEFAULT
+)
 public interface DtoMapper {
     //DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 
@@ -23,7 +39,6 @@ public interface DtoMapper {
     @Mapping(source="extraDto.updated",target="updated")
     TargetDto toTargetDto(SourceDto sourceDto, ExtraDto extraDto, String add_param1, String add_param2);
 
-    // SourceDto -> TargetDto 매핑
 
     @Mapping(source="sourceDto.company",target="company",ignore=true)    //필드명 다른경우 매핑
     @Mapping(source="sourceDto.contents",target="content")
