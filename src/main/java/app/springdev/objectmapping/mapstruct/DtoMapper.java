@@ -35,6 +35,7 @@ public interface DtoMapper {
     @Mapping(source="sourceDto.sender",target="sender", defaultValue = "SYSTEM")
     @Mapping(source="sourceDto.views",target="views",ignore=true)
     @Mapping(source="sourceDto.company",target="company",qualifiedByName = "typeToEnum")
+    @Mapping(source="sourceDto.address",target="address",qualifiedByName = "transAddress")
     @Mapping(source="extraDto.created",target="created")
     @Mapping(source="extraDto.updated",target="updated")
     TargetDto toTargetDto(SourceDto sourceDto, ExtraDto extraDto, String add_param1, String add_param2);
@@ -62,6 +63,7 @@ public interface DtoMapper {
 
     //custom Setter
     @Mapping(source="sourceDto.company",target="company",qualifiedByName = "typeToEnum")
+    @Mapping(source="sourceDto.address",target="address",qualifiedByName = "transAddress")
     @Mapping(source="sourceDto.contents",target="content")
     TargetDto toTargetDtoCustomMethod(SourceDto sourceDto);
 
@@ -76,5 +78,17 @@ public interface DtoMapper {
                 return Company.LGU;
         }
     }
+
+@Named("transAddress")
+default String transAddress(String address) {
+    if(address.isEmpty())
+        return "[미확인]";
+    else {
+        if(address.contains("대한민국"))
+            return "[국내거주자] - " + address;
+        else
+            return "[해외거주자] - " + address;
+    }
+}
 
 }

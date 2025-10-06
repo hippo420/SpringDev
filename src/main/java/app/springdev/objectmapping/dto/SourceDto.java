@@ -13,6 +13,7 @@ public class SourceDto {
     private Integer views;
     private String uniqueValue;
     private String company;
+    private String address;
 
     @Override
     public String toString() {
@@ -25,6 +26,7 @@ public class SourceDto {
                 ", views=" + views +
                 ", uniqueValue='" + uniqueValue + '\'' +
                 ", company='" + company + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 }

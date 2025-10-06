@@ -1,7 +1,5 @@
 package app.springdev.objectmapping.modelmapper;
 
-import app.springdev.elastic.NoticeDocument;
-import app.springdev.elastic.datasync.Noti;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;

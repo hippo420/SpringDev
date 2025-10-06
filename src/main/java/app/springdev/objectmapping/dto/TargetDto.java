@@ -20,6 +20,7 @@ public class TargetDto {
     private String add_param2;
 
     private Company company;
+    private String address;
 
     @Override
     public String toString() {
@@ -36,6 +37,7 @@ public class TargetDto {
                 ", add_param1='" + add_param1 + '\'' +
                 ", add_param2='" + add_param2 + '\'' +
                 ", company=" + company +
+                ", address=" + address +
                 '}';
     }
 }

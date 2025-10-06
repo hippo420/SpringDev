@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/mapper")
@@ -18,11 +19,13 @@ public class ObjMapperController {
     private final ModelMapperService modelMapperService;
 
     @RequestMapping("/model")
+    @ResponseBody
     public String model(@RequestBody SourceDto sourceDto) {
         return modelMapperService.modelMapper(sourceDto);
     }
 
     @RequestMapping("/map")
+    @ResponseBody
     public String map(@RequestBody SourceDto sourceDto) {
         ExtraDto extraDto = new ExtraDto("20240101","20241001");
         String param1 = "파라미터1";
