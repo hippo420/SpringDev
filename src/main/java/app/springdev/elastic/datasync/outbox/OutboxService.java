@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -72,4 +74,23 @@ public class OutboxService {
         });
     }
 
+
+
+    //RabbitMQ
+    @Transactional
+    public void createNotiRelay(Noti noti) throws JsonProcessingException{
+        Noti saved = notiRepository.save(noti);
+
+        NoticeDocument notiDoc = noticeMapper.toNoticeDocument(saved);
+        String payload = objectMapper.writeValueAsString(notiDoc);
+        OutboxEvent outboxEvent = OutboxEvent.builder()
+                .aggregateType("notice")
+                .aggregateId(saved.getId())
+                .payload(payload)
+                .createdAt(LocalDateTime.now())
+                .status("PENDING")
+                .build();
+        outBoxRepository.save(outboxEvent);
+
+    }
 }

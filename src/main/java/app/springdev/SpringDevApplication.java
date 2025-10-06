@@ -7,7 +7,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 
 @SpringBootApplication
 //Hook 처리시 주석
-//@EnableScheduling
+@EnableScheduling
 public class SpringDevApplication {
 
     public static void main(String[] args) {

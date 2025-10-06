@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class OutboxEvent {
     @Id
     @GeneratedValue
@@ -28,7 +29,7 @@ public class OutboxEvent {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private String status = "N";
+    private String status = "PENDING";
 
     @Override
     public String toString() {

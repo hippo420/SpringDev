@@ -97,4 +97,13 @@ public class NotiElasticController {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping("insOutBoxByRabbitMQRelay")
+    public void insOutBoxByRabbitMQRelay(@RequestBody Noti noti) {
+        try {
+            outboxService.createNotiRelay(noti);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

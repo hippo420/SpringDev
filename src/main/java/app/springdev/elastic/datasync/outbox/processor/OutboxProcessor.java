@@ -8,6 +8,7 @@ import app.springdev.elastic.datasync.Noti;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,11 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        value = "scheduler.outbox-processor.enabled", // 확인할 설정 속성 이름
+        havingValue = "true",                      // 해당 속성 값이 "true"일 때만 활성화
+        matchIfMissing = false                      // 속성 자체가 없으면 기본적으로 활성화 (선택 사항)
+)
 public class OutboxProcessor {
     private final OutBoxRepository outboxRepository;
     private final NotiElasticRepository notiElasticRepository; // ES Repository
@@ -24,11 +30,8 @@ public class OutboxProcessor {
     @Scheduled(fixedDelay = 2000) // 5초마다 실행
     public void processOutboxEvents() {
         log.info("Processing outbox events Start!!!!");
-        OutboxEvent cond = new OutboxEvent();
-        cond.setAggregateType("notice");
-        cond.setStatus("N");
 
-        List<OutboxEvent> events = outboxRepository.findByAggregateTypeAndStatus("notice","N");
+        List<OutboxEvent> events = outboxRepository.findByAggregateTypeAndStatus("notice","PENDING");
         for (OutboxEvent e : events) {
             try {
                 Noti noti = objectMapper.readValue(e.getPayload(), Noti.class);
