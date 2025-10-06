@@ -1,18 +1,24 @@
 package app.springdev.objectmapping.modelmapper;
 
-import app.springdev.elastic.NoticeDocument;
-import app.springdev.elastic.datasync.Noti;
+import app.springdev.objectmapping.dto.SourceDto;
+import app.springdev.objectmapping.dto.TargetDto;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 @Slf4j
 @Service
+@AllArgsConstructor
 public class ModelMapperService {
 
-    public void modelMapper(Noti noti) {
-        log.info("매핑전[{}] : {}",noti.getClass().getSimpleName(), noti);
+    private final ModelMapper modelMapper;
 
-        NoticeDocument noticeDocument = new NoticeDocument();
+    public String modelMapper(SourceDto sourceDto) {
+        log.info("매핑전[{}] : {}",sourceDto.getClass().getSimpleName(), sourceDto);
 
-        log.info("매핑후[{}] : {}",noticeDocument.getClass().getSimpleName(), noticeDocument);
+        TargetDto targetDto = modelMapper.map(sourceDto, TargetDto.class);
+
+        log.info("매핑후[{}] : {}",targetDto.getClass().getSimpleName(), targetDto);
+        return targetDto.toString();
     }
 }

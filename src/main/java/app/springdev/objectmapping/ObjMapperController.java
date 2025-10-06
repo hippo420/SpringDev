@@ -3,6 +3,7 @@ package app.springdev.objectmapping;
 import app.springdev.objectmapping.dto.ExtraDto;
 import app.springdev.objectmapping.dto.SourceDto;
 import app.springdev.objectmapping.mapstruct.MapStructService;
+import app.springdev.objectmapping.modelmapper.ModelMapperService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ObjMapperController {
 
     private final MapStructService mapStructService;
+    private final ModelMapperService modelMapperService;
 
     @RequestMapping("/model")
     public String model(@RequestBody SourceDto sourceDto) {
-        return "";
+        return modelMapperService.modelMapper(sourceDto);
     }
 
     @RequestMapping("/map")
