@@ -1,4 +1,4 @@
-package app.springdev.elastic.datasync.simple;
+package app.springdev.elastic.datasync;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

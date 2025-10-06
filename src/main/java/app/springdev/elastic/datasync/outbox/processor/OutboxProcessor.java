@@ -4,7 +4,7 @@ import app.springdev.elastic.NotiElasticRepository;
 import app.springdev.elastic.NoticeDocument;
 import app.springdev.elastic.datasync.outbox.OutBoxRepository;
 import app.springdev.elastic.datasync.outbox.entity.OutboxEvent;
-import app.springdev.elastic.datasync.simple.Noti;
+import app.springdev.elastic.datasync.Noti;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

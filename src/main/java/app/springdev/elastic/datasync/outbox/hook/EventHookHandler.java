@@ -2,7 +2,7 @@ package app.springdev.elastic.datasync.outbox.hook;
 
 import app.springdev.elastic.NotiElasticRepository;
 import app.springdev.elastic.NoticeDocument;
-import app.springdev.elastic.datasync.simple.Noti;
+import app.springdev.elastic.datasync.Noti;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

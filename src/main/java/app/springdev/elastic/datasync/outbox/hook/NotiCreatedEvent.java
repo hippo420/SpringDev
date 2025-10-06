@@ -1,6 +1,6 @@
 package app.springdev.elastic.datasync.outbox.hook;
 
-import app.springdev.elastic.datasync.simple.Noti;
+import app.springdev.elastic.datasync.Noti;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

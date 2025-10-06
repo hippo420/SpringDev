@@ -1,4 +1,4 @@
-package app.springdev.elastic.datasync.simple;
+package app.springdev.elastic.datasync;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

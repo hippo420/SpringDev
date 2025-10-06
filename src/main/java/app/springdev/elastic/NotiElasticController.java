@@ -1,13 +1,11 @@
 package app.springdev.elastic;
 
 import app.springdev.elastic.datasync.outbox.OutboxService;
-import app.springdev.elastic.datasync.simple.Noti;
-import app.springdev.elastic.datasync.simple.NotiRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import app.springdev.elastic.datasync.Noti;
+import app.springdev.elastic.datasync.NotiRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
