@@ -6,6 +6,7 @@ import app.springdev.elastic.datasync.outbox.entity.OutboxEvent;
 import app.springdev.elastic.datasync.outbox.hook.NotiCreatedEvent;
 import app.springdev.elastic.datasync.Noti;
 import app.springdev.elastic.datasync.NotiRepository;
+import app.springdev.elastic.datasync.outbox.mapper.NoticeMapper;
 import app.springdev.elastic.datasync.outbox.rabbit.config.RabbitMQConfig;
 import app.springdev.elastic.datasync.outbox.rabbit.message.SyncDataConsumer;
 import app.springdev.elastic.datasync.outbox.rabbit.message.SyncDataPublisher;
@@ -25,11 +26,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class OutboxService {
     private final OutBoxRepository outBoxRepository;
     private final NotiRepository notiRepository;
-    private final NotiElasticRepository notiElasticRepository;
     private final ObjectMapper objectMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final SyncDataPublisher syncDataPublisher;
-    private final SyncDataConsumer syncDataConsumer;
+    private final NoticeMapper noticeMapper;
 
     @Transactional
     public void createNoti (Noti noti) throws JsonProcessingException {
@@ -59,14 +59,7 @@ public class OutboxService {
     public void createNotiRabbitMq(Noti noti) throws JsonProcessingException{
         Noti saved = notiRepository.save(noti);
 
-        NoticeDocument notiDoc = new NoticeDocument();
-        notiDoc.setId(saved.getId());
-        notiDoc.setTitle(saved.getTitle());
-        notiDoc.setContent(saved.getContent());
-        notiDoc.setWriter(saved.getWriter());
-        notiDoc.setCreatedAt(saved.getCreatedAt());
-        notiDoc.setCategory(saved.getCategory());
-        notiDoc.setViews(saved.getViews());
+        NoticeDocument notiDoc = noticeMapper.toNoticeDocument(noti);
 
         String data = objectMapper.writeValueAsString(notiDoc);
 
@@ -78,4 +71,5 @@ public class OutboxService {
             }
         });
     }
+
 }
