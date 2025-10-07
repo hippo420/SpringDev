@@ -32,7 +32,6 @@ public class OutboxEventAspect {
         // 1. 비즈니스 메서드 실행
         Object result = joinPoint.proceed();
 
-
         // 2. 어노테이션 및 인자 정보 가져오기
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -69,7 +68,6 @@ public class OutboxEventAspect {
                 errMsg ="@EventPublish에 useReturnValue, payloadName, payloadIndex 중 하나를 설정하세요";
                 throw new IllegalStateException(errMsg);
             }
-
         }
 
         if (payloadObject == null) {

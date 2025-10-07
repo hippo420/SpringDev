@@ -98,7 +98,5 @@ public class OutboxService {
     public NoticeDocument createNotiRelayAOP(Noti noti, String param1) throws JsonProcessingException{
         Noti saved = notiRepository.save(noti);
         return noticeMapper.toNoticeDocument(saved);
-
-
     }
 }

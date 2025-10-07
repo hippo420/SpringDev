@@ -22,6 +22,6 @@ public @interface EventPublish {
      * 메서드 인자 목록에서 이벤트 페이로드로 사용될 객체를 지정
      */
     // (선택 사항: 레거시 지원을 위해 남겨둘 수 있으나, 여기서는 useReturnValue만 사용)
-     String payloadName() default "";
-     int payloadIndex() default -1;
+    String payloadName() default "";
+    int payloadIndex() default -1;
 }
