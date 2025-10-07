@@ -49,7 +49,7 @@ public class OutboxProcessor {
                 notiElasticRepository.save(doc);
 
                 // 3. 상태 변경
-                e.setStatus("Y");
+                e.setStatus("COMPLETED");
                 outboxRepository.save(e);
             } catch (Exception ex) {
                 log.error("Failed to process outbox event: {}", e.getId(), ex);

@@ -2,6 +2,7 @@ package app.springdev.elastic.datasync.outbox;
 
 import app.springdev.elastic.NotiElasticRepository;
 import app.springdev.elastic.NoticeDocument;
+import app.springdev.elastic.datasync.outbox.annotation.EventPublish;
 import app.springdev.elastic.datasync.outbox.entity.OutboxEvent;
 import app.springdev.elastic.datasync.outbox.hook.NotiCreatedEvent;
 import app.springdev.elastic.datasync.Noti;
@@ -38,8 +39,6 @@ public class OutboxService {
 
         notiRepository.save(noti);
         String payload = objectMapper.writeValueAsString(noti);
-
-
         OutboxEvent outboxEvent = new OutboxEvent();
         outboxEvent.setAggregateType("notice");
         outboxEvent.setAggregateId(noti.getId());
@@ -91,6 +90,15 @@ public class OutboxService {
                 .status("PENDING")
                 .build();
         outBoxRepository.save(outboxEvent);
+
+    }
+
+    @Transactional
+    @EventPublish(aggregateType = "notice",useReturnValue = true)
+    public NoticeDocument createNotiRelayAOP(Noti noti, String param1) throws JsonProcessingException{
+        Noti saved = notiRepository.save(noti);
+        return noticeMapper.toNoticeDocument(saved);
+
 
     }
 }

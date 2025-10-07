@@ -30,8 +30,8 @@ public class MessageRelayScheduler {
     private RabbitTemplate rabbitTemplate;
 
     // 주기적으로 Outbox 테이블을 폴링
-    @Scheduled(fixedDelay = 2000) // 1초마다 실행
-    @Transactional(propagation = Propagation.REQUIRES_NEW) // 별도의 트랜잭션으로 DB 접근
+    @Scheduled(fixedDelay = 2000)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPendingEvents() {
 
         // PENDING 상태의 이벤트 조회 (LOCK을 사용하여 동시성 제어 필요)
@@ -43,7 +43,6 @@ public class MessageRelayScheduler {
                 // RabbitMQ로 전송
                 rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, event.getPayload());
 
-                // 성공 시 상태 업데이트 또는 삭제
                 event.setStatus("COMPLETED");
                 outboxRepository.save(event);
 

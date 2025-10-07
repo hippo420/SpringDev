@@ -16,47 +16,47 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class NotiElasticController {
 
-    private final NotiElasticRepository repository;
-    private final NotiRepository postRepository;
+    private final NotiElasticRepository NotiElasticRepository;
+    private final NotiRepository notiRepository;
     private final OutboxService outboxService;
 
 
     @RequestMapping("ins")
     public void save(@RequestBody NoticeDocument noti) {
         log.info("ins -> {}" , noti);
-        repository.save(noti);
+        NotiElasticRepository.save(noti);
     }
 
     @RequestMapping("upd")
     public void update(@RequestBody NoticeDocument noti) {
-        repository.save(noti);
+        NotiElasticRepository.save(noti);
     }
 
     @RequestMapping("lst")
     public String search(@RequestParam Long id) {
-        return repository.findById(id).toString();
+        return NotiElasticRepository.findById(id).toString();
     }
 
     @RequestMapping("lstAll")
     public void lstAll() {
-        repository.findAll();
+        NotiElasticRepository.findAll();
     }
 
     @RequestMapping("del")
     public void delete(@RequestParam Long id) {
-        repository.deleteById(id);
+        NotiElasticRepository.deleteById(id);
     }
 
     @Transactional
     @RequestMapping("insNotiNonSync")
     public void insNotiNonSync(@RequestBody Noti noti) {
-        postRepository.save(noti);
+        notiRepository.save(noti);
     }
 
     @Transactional
     @RequestMapping("insNotiSync")
     public void insNotiSync(@RequestBody Noti noti) {
-        postRepository.save(noti);
+        notiRepository.save(noti);
         NoticeDocument notiDoc = new NoticeDocument();
         notiDoc.setId(noti.getId());
         notiDoc.setTitle(noti.getTitle());
@@ -65,7 +65,7 @@ public class NotiElasticController {
         notiDoc.setCreatedAt(noti.getCreatedAt());
         notiDoc.setCategory(noti.getCategory());
         notiDoc.setViews(noti.getViews());
-        repository.save(notiDoc);
+        NotiElasticRepository.save(notiDoc);
     }
 
 
@@ -106,4 +106,15 @@ public class NotiElasticController {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping("insOutBoxByRabbitMQRelay_AOP")
+    public void insOutBoxByRabbitMQRelay_AOP(@RequestBody Noti noti) {
+        try {
+            outboxService.createNotiRelayAOP(noti,"2번 파라미터");
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
