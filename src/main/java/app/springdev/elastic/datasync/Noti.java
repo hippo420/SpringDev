@@ -1,9 +1,11 @@
 package app.springdev.elastic.datasync;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,6 +27,9 @@ public class Noti {
 
     private String createdAt;
 
+    @ColumnDefault("PENDING")
+    private String status;
+
     @Override
     public String toString() {
         return "Noti{" +
@@ -35,6 +40,7 @@ public class Noti {
                 ", category='" + category + '\'' +
                 ", views=" + views  +
                 ", createdAt='" + createdAt + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

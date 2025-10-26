@@ -116,5 +116,10 @@ public class NotiElasticController {
         }
     }
 
+    @RequestMapping("insNotiLogstash")
+    public void insNotiLogstash(@RequestBody Noti noti) {
 
+        outboxService.insNotiLogstash(noti);
+
+    }
 }

@@ -99,4 +99,11 @@ public class OutboxService {
         Noti saved = notiRepository.save(noti);
         return noticeMapper.toNoticeDocument(saved);
     }
+
+    //logstash 사용 동기화처리
+    public void insNotiLogstash(Noti noti) {
+        noti.setStatus("PENDING");
+        Noti saved = notiRepository.save(noti);
+        log.info("insNotiLogstash - noti = {}", saved);
+    }
 }
