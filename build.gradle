@@ -76,6 +76,9 @@ dependencies {
 
     //RedisSession
     implementation 'org.springframework.session:spring-session-data-redis'
+
+    //Cache -Caffein
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 }
 dependencyManagement {
     imports {
