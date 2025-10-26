@@ -33,6 +33,18 @@ public class CacheService {
         log.info("Fetch 건수: {} 건", res.size());
     }
 
+    public void simpleCacheSync(String key, Long price) {
+        log.info("simpleCache 데이터수정시 캐시삭제: {}", key);
+        simpleCache.updData(key, price);
+    }
+
+    public void simpleCacheNoSync(String key, Long price) {
+        log.info("simpleCache 데이터수정시 캐시불일치: {}", key);
+        List<StockStatus> res = cacheRepository.findByStockName(key);
+        res.get(0).setCurrentPrice(price);
+        cacheRepository.saveAll(res);
+    }
+
     /** Spring Cache 적용 **/
     private final SimpleCache simpleCache;
     //객체
@@ -90,4 +102,6 @@ public class CacheService {
     public void springCacheClear1(StockStatus stock) {
         cacheRepository.save(stock);
     }
+
+
 }

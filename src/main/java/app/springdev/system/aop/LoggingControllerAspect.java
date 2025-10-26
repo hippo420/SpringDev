@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 @Component
 public class LoggingControllerAspect {
     // 컨트롤러에 있는 모든 public 메서드 대상
-    @Around("execution(public * app.springdev..ctl..*(..))")
+    @Around("execution(public * app.springdev..ctl..*(..)) || execution(public * app.springdev.cache.CacheController.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -23,7 +23,7 @@ public class LoggingControllerAspect {
         if (method.getReturnType() == String.class) {
             return joinPoint.proceed();
         }
-        log.info("컨트롤러 진입 >>> {}", joinPoint.getSignature().getClass().getSimpleName());
+        log.info("컨트롤러 진입 >>> {}", joinPoint.getTarget().getClass().getSimpleName());
         long start = System.currentTimeMillis();
 
         try {

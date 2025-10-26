@@ -33,6 +33,18 @@ public class CacheController {
         cacheService.simpleCache(key);
     }
 
+    @RequestMapping("/noSync")
+    public void simpleCacheNoSync(@RequestParam String key,@RequestParam Long price) {
+
+        cacheService.simpleCacheNoSync(key,price);
+    }
+
+    @RequestMapping("/sync")
+    public void simpleCacheSync(@RequestParam String key,@RequestParam Long price) {
+
+        cacheService.simpleCacheSync(key,price);
+    }
+
     /**
      * 2. 스프링 캐시
      */
