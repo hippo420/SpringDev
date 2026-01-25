@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 @Service
@@ -31,7 +32,9 @@ public class OutboxProcessor {
     public void processOutboxEvents() {
         log.info("Processing outbox events Start!!!!");
 
-        List<OutboxEvent> events = outboxRepository.findByAggregateTypeAndStatus("notice","PENDING");
+        //TODO 미사용시 트랜잭션 줄이기 위해 주석처리, 필요시 해제
+        //List<OutboxEvent> events = outboxRepository.findByAggregateTypeAndStatus("notice","PENDING");
+        List<OutboxEvent> events = new ArrayList<>();
         for (OutboxEvent e : events) {
             try {
                 Noti noti = objectMapper.readValue(e.getPayload(), Noti.class);

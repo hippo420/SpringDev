@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 @Component
@@ -34,8 +35,10 @@ public class MessageRelayScheduler {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPendingEvents() {
 
+        //TODO 미사용시 트랜잭션 줄이기 위해 주석처리, 필요시 해제
         // PENDING 상태의 이벤트 조회 (LOCK을 사용하여 동시성 제어 필요)
-        List<OutboxEvent> pendingEvents = outboxRepository.findByAggregateTypeAndStatus("notice","PENDING");
+        //List<OutboxEvent> pendingEvents = outboxRepository.findByAggregateTypeAndStatus("notice","PENDING");
+        List<OutboxEvent> pendingEvents = new ArrayList<>();
         log.info("Pending Events({})...started!!",pendingEvents.size());
 
         for (OutboxEvent event : pendingEvents) {

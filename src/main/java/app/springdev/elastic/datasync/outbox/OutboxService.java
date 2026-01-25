@@ -34,9 +34,11 @@ public class OutboxService {
     private final SyncDataPublisher syncDataPublisher;
     private final NoticeMapper noticeMapper;
 
+    //주석처리
     @Transactional
     public void createNoti (Noti noti) throws JsonProcessingException {
 
+        //주석처리
         notiRepository.save(noti);
         String payload = objectMapper.writeValueAsString(noti);
         OutboxEvent outboxEvent = new OutboxEvent();
@@ -44,14 +46,16 @@ public class OutboxService {
         outboxEvent.setAggregateId(noti.getId());
         outboxEvent.setType("NOTICE_CREATED");
         outboxEvent.setPayload(payload);
+        //주석처리
         outBoxRepository.save(outboxEvent);
     }
 
     @Transactional
-    public Noti  createNotiByHook (Noti noti) throws JsonProcessingException {
+    public Noti createNotiByHook (Noti noti) throws JsonProcessingException {
 
         Noti saved = notiRepository.save(noti);
-        eventPublisher.publishEvent(new NotiCreatedEvent(saved));
+        //주석처리
+        //eventPublisher.publishEvent(new NotiCreatedEvent(saved));
         return saved;
     }
 
