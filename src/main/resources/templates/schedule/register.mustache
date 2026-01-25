@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>배치 관리 시스템</title>
+    <style>
+        /* [기존 스타일 유지] */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; background: #f9fafb; padding: 40px; margin: 0; }
+        .container { max-width: 1200px; margin: auto; }
+        table { width: 100%; background: #fff; border-radius: 16px; border-collapse: collapse; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 20px; }
+        th, td { padding: 14px; font-size: 14px; text-align: left; }
+        th { background: #f2f4f6; font-weight: 600; }
+        tr:not(:last-child) td { border-bottom: 1px solid #e5e8eb; }
+        .btn { border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
+        .btn-primary { background: #3182f6; color: #fff; }
+        .btn-secondary { background: #f2f4f6; color: #4e5968; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+        .ON { background: #e6f4ff; color: #3182f6; }
+        .OFF { background: #f2f4f6; color: #999; }
+
+        /* [모달 및 폼 스타일] */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal-card {
+            background: #fff; width: 100%; max-width: 550px; border-radius: 20px; padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); animation: slideUp 0.3s ease-out;
+            max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .form-group { margin-bottom: 16px; position: relative; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #4e5968; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #e5e8eb; border-radius: 10px;
+            box-sizing: border-box; font-size: 14px; font-family: inherit; transition: border-color 0.2s;
+        }
+        textarea { min-height: 80px; font-family: monospace; resize: vertical; }
+        .row { display: flex; gap: 12px; }
+        .row .form-group { flex: 1; }
+
+        /* [Validation 스타일 추가] */
+        input.invalid, textarea.invalid { border-color: #e5484d; background-color: #fff8f8; }
+        .error-msg { color: #e5484d; font-size: 11px; margin-top: 4px; display: none; }
+        input.invalid + .error-msg, textarea.invalid + .error-msg { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>배치 목록</h1>
+        <button class="btn btn-primary" onclick="openRegisterModal()">+ 배치 등록</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr><th>배치명</th><th>Cron</th><th>상태</th><th>최근 실행</th><th>ON / OFF</th><th>로그</th></tr>
+        </thead>
+        <tbody>
+        {{#jobs}}
+            <tr>
+                <td>{{jobName}}</td>
+                <td>{{cronExpression}}</td>
+                <td><span class="badge {{lastStatus}}">{{lastStatus}}</span></td>
+                <td>{{lastStartTime}}</td>
+                <td><span style="cursor:pointer; color:#3182f6; font-weight:600;">{{#active}}ON{{/active}}{{^active}}OFF{{/active}}</span></td>
+                <td><button class="btn btn-secondary">보기</button></td>
+            </tr>
+        {{/jobs}}
+        </tbody>
+    </table>
+</div>
+
+<div id="registerModal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 18px; margin: 0;">새 배치 등록</h2>
+            <span style="cursor:pointer; font-size: 24px; color: #999;" onclick="closeRegisterModal()">&times;</span>
+        </div>
+
+        <form id="batchForm" action="/schedule/batch/save" method="post" onsubmit="return handleFormSubmit(event)">
+            <div class="form-group">
+                <label>배치명</label>
+                <input type="text" name="jobName" placeholder="배치 이름을 입력하세요">
+                <div class="error-msg">배치명을 입력해 주세요.</div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>실행 Bean 이름</label>
+                    <input type="text" name="beanName" placeholder="sampleJobBean">
+                    <div class="error-msg">Bean 이름을 입력해 주세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>Cron 표현식</label>
+                    <input type="text" name="cronExpression" placeholder="0 0 12 * * *">
+                    <div class="error-msg">올바른 Cron 형식이 아닙니다 (6~7자리).</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>기본 파라미터 (JSON)</label>
+                <textarea name="parameters" placeholder='{"key":"value"}'></textarea>
+                <div class="error-msg">JSON 형식이 올바르지 않습니다.</div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>휴일 실행</label>
+                    <select name="runOnHoliday">
+                        <option value="Y">실행</option>
+                        <option value="N">미실행</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>사용 여부</label>
+                    <select name="isActive">
+                        <option value="Y">사용</option>
+                        <option value="N">미사용</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>설명</label>
+                <input type="text" name="description">
+            </div>
+
+            <div style="text-align: right; margin-top: 24px;">
+                <button type="button" class="btn btn-secondary" onclick="closeRegisterModal()">취소</button>
+                <button type="submit" class="btn btn-primary">저장하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 팝업 열기/닫기
+    function openRegisterModal() {
+        document.getElementById('batchForm').reset();
+        clearValidation(); // 이전 에러 표시 초기화
+        document.getElementById('registerModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRegisterModal() {
+        document.getElementById('registerModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // 에러 표시 초기화
+    function clearValidation() {
+        const inputs = document.querySelectorAll('#batchForm input, #batchForm textarea');
+        inputs.forEach(el => el.classList.remove('invalid'));
+    }
+
+    // [Validation 핵심 로직]
+    function handleFormSubmit(e) {
+        const form = e.target;
+        let isValid = true;
+
+        // 1. 배치명 검사
+        if (!form.jobName.value.trim()) {
+            form.jobName.classList.add('invalid');
+            isValid = false;
+        } else {
+            form.jobName.classList.remove('invalid');
+        }
+
+        // 2. Bean 이름 검사
+        if (!form.beanName.value.trim()) {
+            form.beanName.classList.add('invalid');
+            isValid = false;
+        } else {
+            form.beanName.classList.remove('invalid');
+        }
+
+        // 3. Cron 표현식 검사 (정규식: 공백으로 구분된 6~7개 문자)
+        const cronRegex = /^(\S+\s+){5,6}\S+$/;
+        if (!cronRegex.test(form.cronExpression.value.trim())) {
+            form.cronExpression.classList.add('invalid');
+            isValid = false;
+        } else {
+            form.cronExpression.classList.remove('invalid');
+        }
+
+        // 4. JSON 파라미터 검사 (값이 있을 때만)
+        const params = form.parameters.value.trim();
+        if (params) {
+            try {
+                JSON.parse(params);
+                form.parameters.classList.remove('invalid');
+            } catch (err) {
+                form.parameters.classList.add('invalid');
+                isValid = false;
+            }
+        } else {
+            form.parameters.classList.remove('invalid');
+        }
+
+        if (!isValid) {
+            e.preventDefault(); // 제출 중단
+            return false;
+        }
+        return true;
+    }
+
+    // 모달 배경 클릭 시 닫기
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('registerModal')) closeRegisterModal();
+    }
+</script>
+
+</body>
+</html>

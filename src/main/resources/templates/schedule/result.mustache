@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>배치 실행 이력</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; background-color: #f9fafb; padding: 40px; color: #333; }
+        .container { max-width: 1200px; margin: auto; }
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h1 { font-size: 22px; margin: 0; }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        th, td { padding: 14px; text-align: left; font-size: 14px; }
+        th { background-color: #f2f4f6; font-weight: 600; color: #4e5968; }
+        tr:not(:last-child) td { border-bottom: 1px solid #e5e8eb; }
+
+        /* 상태별 색상 */
+        .status { font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .SUCCESS { background: #ecfdf3; color: #00a870; }
+        .FAILED { background: #fef2f2; color: #e5484d; }
+        .STARTED { background: #fff9db; color: #f59e0b; }
+
+        .btn { padding: 8px 12px; font-size: 13px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-secondary { background: #e5e8eb; color: #4e5968; }
+        .btn-secondary:hover { background: #d8dadd; }
+        .retry { background: #3182f6; color: #fff; }
+        .retry:hover { background: #1b64da; }
+
+        .error-msg { color: #8b95a1; font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: help; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <h1>배치 실행 이력</h1>
+        <button class="btn btn-secondary" onclick="location.href='/schedule/list'">← 관리 화면으로</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>배치명</th>
+            <th>시작 시간</th>
+            <th>종료 시간</th>
+            <th>상태</th>
+            <th>메시지</th>
+            <th>액션</th>
+        </tr>
+        </thead>
+        <tbody id="batchTableBody">
+        <tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">데이터 로딩 중...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', fetchHistoryList);
+
+    async function fetchHistoryList() {
+        try {
+            // API 호출 (서버 주소 확인 필요)
+            const response = await fetch('http://localhost:30001/api/schedule/result');
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const historyList = await response.json();
+            renderTable(historyList);
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('batchTableBody').innerHTML =
+                `<tr><td colspan="6" style="text-align: center; color: #e5484d; padding: 40px;">데이터를 불러오지 못했습니다. (서버 연결 확인)</td></tr>`;
+        }
+    }
+
+    function renderTable(histories) {
+        const tableBody = document.getElementById('batchTableBody');
+
+        if (!histories || histories.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px;">실행 이력이 없습니다.</td></tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = histories.map(h => {
+            // h.batchJob이 Proxy 객체 에러로 비어있을 경우를 대비한 안전 처리
+            const jobName = h.batchJob ? h.batchJob.jobName : '미등록 배치';
+            const jobId = h.batchJob ? h.batchJob.id : null;
+
+            return `
+                <tr>
+                    <td style="font-weight: 600;">${jobName}</td>
+                    <td>${formatDate(h.startTime)}</td>
+                    <td>${formatDate(h.endTime)}</td>
+                    <td><span class="status ${h.status}">${h.status}</span></td>
+                    <td class="error-msg" title="${h.errorMessage || ''}">${h.errorMessage || '-'}</td>
+                    <td>
+                        ${jobId ? `<button class="btn retry" onclick="runManually(${jobId})">즉시 실행</button>` : '-'}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // 날짜 포맷 함수 (ISO 형식을 읽기 편하게 변환)
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleString('ko-KR', {
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+    }
+
+    // 수동 재실행 함수
+    async function runManually(jobId) {
+        if (!confirm('해당 배치를 즉시 실행하시겠습니까?')) return;
+
+        try {
+            const response = await fetch(`http://localhost:30001/api/schedule/run/${jobId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                alert('배치 실행 요청을 보냈습니다.');
+                fetchHistoryList(); // 목록 새로고침
+            } else {
+                alert('실행 요청 실패');
+            }
+        } catch (error) {
+            alert('서버 통신 오류');
+        }
+    }
+</script>
+</body>
+</html>

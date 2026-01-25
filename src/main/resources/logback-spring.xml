@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProperty scope="context"
+                    name="APP_NAME"
+                    source="spring.application.name"
+                    defaultValue="batch-service"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>return message.contains("from outbox_event");</expression>
+            </evaluator>
+            <OnMatch>DENY</OnMatch>
+            <OnMismatch>NEUTRAL</OnMismatch>
+        </filter>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg batch=%X{batchName}%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.hibernate.SQL" level="INFO"/>
+    <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.batch" level="INFO"/>
+
+    <logger name="your.project.package" level="DEBUG"/>
+
+    <springProfile name="local">
+        <property name="LOG_PATH" value="D:\logs\SpringDev"/>
+
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${APP_NAME}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg %X{batchName}%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </root>
+
+        <logger name="app.springdev" level="DEBUG"/>
+
+        <logger name="org.apache.catalina" level="INFO"/>
+        <logger name="org.apache.tomcat" level="INFO"/>
+    </springProfile>
+
+    <springProfile name="prod">
+        <property name="LOG_PATH" value="/app/logs"/>
+
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${APP_NAME}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg %X{batchName}%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

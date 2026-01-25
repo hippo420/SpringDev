@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>배치 관리 시스템</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; background: #f9fafb; padding: 40px; color: #333; }
+        .container { max-width: 1200px; margin: auto; }
+        h1 { font-size: 22px; margin: 0; }
+
+        /* 테이블 행에 마우스 포인터 및 호버 효과 추가 */
+        table { width: 100%; background: #fff; border-radius: 16px; border-collapse: collapse; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 20px; overflow: hidden; }
+        th, td { padding: 14px; font-size: 14px; text-align: left; }
+        th { background: #f2f4f6; font-weight: 600; color: #4e5968; }
+        tr:not(:last-child) td { border-bottom: 1px solid #e5e8eb; }
+        tbody tr { cursor: pointer; transition: 0.2s; }
+        tbody tr:hover { background: #f2f4f6; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+        .SUCCESS { background: #ecfdf3; color: #00a870; }
+        .FAILED { background: #fef2f2; color: #e5484d; }
+
+        .btn { border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: #3182f6; color: #fff; }
+        .btn-secondary { background: #f2f4f6; color: #4e5968; }
+
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal-card {
+            background: #fff; width: 100%; max-width: 850px; border-radius: 20px; padding: 30px;
+            display: flex; gap: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-form { flex: 1.2; }
+        .modal-guide { flex: 0.8; background: #f8f9fa; border-radius: 12px; padding: 20px; font-size: 13px; border: 1px solid #eee; }
+
+        .form-group { margin-bottom: 16px; position: relative; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #4e5968; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; border: 1px solid #e5e8eb; border-radius: 10px;
+            box-sizing: border-box; font-size: 14px; outline: none;
+        }
+        .form-group input:focus { border-color: #3182f6; }
+
+        #cronHelper { display: block; margin-top: 6px; font-size: 12px; color: #3182f6; font-weight: 600; min-height: 18px; }
+        .error-text { color: #e5484d !important; }
+
+        .row { display: flex; gap: 12px; }
+        .row .form-group { flex: 1; }
+
+        .guide-title { font-weight: 700; margin-bottom: 10px; color: #333; display: flex; align-items: center; gap: 5px; }
+        .cron-spec { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
+        .cron-spec div { background: #fff; padding: 6px; border-radius: 6px; border: 1px solid #eef; font-size: 11px; }
+        .example-tag { display: inline-block; padding: 4px 8px; background: #e6f4ff; color: #3182f6; border-radius: 6px; margin: 2px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .example-tag:hover { background: #3182f6; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>배치 관리 시스템</h1>
+        <div style="display: flex; gap: 8px;"> <button class="btn btn-secondary" onclick="location.href='/schedule/results'">배치실행결과</button>
+            <button class="btn btn-primary" onclick="openRegisterModal()">+ 배치 등록</button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>배치명</th>
+            <th>Cron</th>
+            <th>상태</th>
+            <th>사용 여부</th>
+        </tr>
+        </thead>
+        <tbody id="batchTableBody">
+        <tr><td colspan="5" style="text-align: center; color: #999; padding: 40px;">데이터 로딩 중...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="registerModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-form">
+            <h2 id="modalTitle" style="font-size: 18px; margin: 0 0 20px 0;">새 배치 등록</h2>
+
+            <form id="batchForm">
+                <input type="hidden" name="id" id="jobId">
+
+                <div class="form-group">
+                    <label>배치명</label>
+                    <input type="text" name="jobName" id="jobName" placeholder="예: 매일_정산_배치">
+                </div>
+
+                <div class="form-group">
+                    <label>실행 Bean 이름</label>
+                    <input type="text" name="beanName" id="beanName" placeholder="Spring Bean ID">
+                </div>
+
+                <div class="form-group">
+                    <label>Cron 표현식</label>
+                    <input type="text" name="cronExpression" id="cronExpression" placeholder="0 0 * * * *" oninput="updateCronHelper(this.value)">
+                    <small id="cronHelper">💡 입력 시 한국어 설명이 나타납니다.</small>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>휴일 실행</label>
+                        <select name="runOnHoliday" id="runOnHoliday">
+                            <option value="Y">실행</option>
+                            <option value="N" selected>미실행</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>사용 여부</label>
+                        <select name="isActive" id="isActive">
+                            <option value="Y" selected>사용</option>
+                            <option value="N">미사용</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="actions" style="text-align: right; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeRegisterModal()">취소</button>
+                    <button type="button" class="btn btn-primary" id="saveBtn" onclick="submitBatch()">저장하기</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-guide">
+            <div class="guide-title">📋 Cron 작성 가이드</div>
+            <div class="cron-spec">
+                <div>1. 초 (0-59)</div><div>2. 분 (0-59)</div>
+                <div>3. 시 (0-23)</div><div>4. 일 (1-31)</div>
+                <div>5. 월 (1-12)</div><div>6. 요일 (0-7)</div>
+            </div>
+            <div class="guide-title" style="margin-top: 20px;">💡 자주 쓰는 예제</div>
+            <div id="cronExamples">
+                <span class="example-tag" onclick="setCron('0 0 * * * *')">매시간 정각</span>
+                <span class="example-tag" onclick="setCron('0 0 0 * * *')">매일 자정</span>
+                <span class="example-tag" onclick="setCron('0 0/30 * * * *')">30분 간격</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/cronstrue@latest/dist/cronstrue-i18n.min.js"></script>
+<script>
+    let batchList = []; // 전체 데이터를 담을 배열
+
+    document.addEventListener('DOMContentLoaded', fetchBatchList);
+
+    async function fetchBatchList() {
+        try {
+            const response = await fetch('http://localhost:30001/api/schedule/list');
+            batchList = await response.json();
+            renderTable(batchList);
+        } catch (error) {
+            document.getElementById('batchTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #e5484d; padding: 40px;">서버 연결 실패</td></tr>`;
+        }
+    }
+
+    function renderTable(jobs) {
+        const tableBody = document.getElementById('batchTableBody');
+        if (!jobs || jobs.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px;">데이터 없음</td></tr>`;
+            return;
+        }
+        // 행 클릭 시 openUpdateModal 호출 (index 전달)
+        tableBody.innerHTML = jobs.map((job, index) => `
+            <tr onclick="openUpdateModal(${index})">
+                <td style="font-weight: 600;">${job.jobName}</td>
+                <td title="${getHangleCron(job.cronExpression)}">${job.cronExpression}</td>
+                <td><span class="badge SUCCESS">${job.lastStatus || 'IDLE'}</span></td>
+                <td style="color:${job.isActive === 'Y' ? '#3182f6' : '#999'}; font-weight:600;">${job.isActive === 'Y' ? '사용 중' : '중지'}</td>
+            </tr>
+        `).join('');
+    }
+
+    /**
+     * 수정 모달 열기 - 클릭한 행의 데이터를 폼에 채움
+     */
+    function openUpdateModal(index) {
+        const job = batchList[index];
+        document.getElementById('modalTitle').innerText = "배치 정보 수정";
+        document.getElementById('jobId').value = job.id;
+        document.getElementById('jobName').value = job.jobName;
+        document.getElementById('beanName').value = job.beanName;
+        document.getElementById('cronExpression').value = job.cronExpression;
+        document.getElementById('runOnHoliday').value = job.runOnHoliday || 'N';
+        document.getElementById('isActive').value = job.isActive || 'Y';
+
+        updateCronHelper(job.cronExpression);
+        document.getElementById('registerModal').style.display = 'flex';
+    }
+
+    function openRegisterModal() {
+        document.getElementById('modalTitle').innerText = "새 배치 등록";
+        document.getElementById('batchForm').reset();
+        document.getElementById('jobId').value = ""; // ID 초기화 필수
+        document.getElementById('registerModal').style.display = 'flex';
+        document.getElementById('cronHelper').innerText = "💡 입력 시 한국어 설명이 나타납니다.";
+    }
+
+    function closeRegisterModal() {
+        document.getElementById('registerModal').style.display = 'none';
+    }
+
+    /**
+     * 저장/수정 통합 처리
+     */
+    async function submitBatch() {
+        if (!validateForm()) return;
+
+        const jobId = document.getElementById('jobId').value;
+        const isUpdate = jobId !== "";
+        const url = isUpdate ? 'http://localhost:30001/api/schedule/update' : 'http://localhost:30001/api/schedule/save';
+
+        const formData = new FormData(document.getElementById('batchForm'));
+        const jsonData = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (response.ok) {
+                alert(isUpdate ? '배치가 수정되었습니다.' : '배치가 저장되었습니다.');
+                closeRegisterModal();
+                await fetchBatchList(); // 목록 새로고침
+            } else {
+                alert('처리 실패');
+            }
+        } catch (error) {
+            alert('서버 통신 오류');
+        }
+    }
+
+    /* 유틸리티 함수들 */
+    function setCron(exp) {
+        document.getElementById('cronExpression').value = exp;
+        updateCronHelper(exp);
+    }
+
+    function updateCronHelper(value) {
+        const helper = document.getElementById('cronHelper');
+        if (!value) { helper.innerText = "💡 입력 시 한국어 설명이 나타납니다."; return; }
+        try {
+            helper.innerText = "🎯 " + cronstrue.toString(value, { locale: "ko" });
+            helper.classList.remove('error-text');
+        } catch (e) {
+            helper.innerText = "❌ 형식 오류";
+            helper.classList.add('error-text');
+        }
+    }
+
+    function getHangleCron(cron) {
+        try { return cronstrue.toString(cron, { locale: "ko" }); } catch (e) { return ""; }
+    }
+
+    function validateForm() {
+        const fields = [{id:'jobName', name:'배치명'}, {id:'beanName', name:'Bean 이름'}, {id:'cronExpression', name:'Cron'}];
+        for (let f of fields) {
+            if (!document.getElementById(f.id).value.trim()) {
+                alert(`${f.name}을(를) 입력해주세요.`);
+                document.getElementById(f.id).focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // JS 함수 추가 (필요 시)
+    function openResult() {
+        location.href = '/api/schedule/results'; // 결과 화면 URL
+    }
+</script>
+</body>
+</html>
